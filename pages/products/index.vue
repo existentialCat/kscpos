@@ -1,0 +1,139 @@
+<template>
+  <v-container>
+    <v-row>
+      <v-col>Total Products: {{ products.length }}</v-col>
+      <v-col>Total On Hand: calculate</v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        ><v-data-table
+          ref="prodtable"
+          :items="products"
+          :search="search"
+          :headers="headers"
+        >
+          <template v-slot:top>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field
+            ><v-row align="center" class="pa-4"
+              >Filter:
+              <v-chip
+                class="ma-1"
+                :color="!filterKeywords.length ? 'primary' : ''"
+                @click="filterKeywords = []"
+                >All</v-chip
+              ><v-chip
+                v-for="keyword in keywords"
+                :key="keyword._id"
+                class="ma-1"
+                :color="filterKeywords.includes(keyword) ? 'primary' : ''"
+                @click="addToFilter(keyword)"
+                >{{ keyword.name }}</v-chip
+              ></v-row
+            ></template
+          >
+          <template v-slot:item.keywords="{ item }">
+            <v-chip v-for="keyword in item.keywords" :key="keyword._id" small>
+              {{ keyword.name }}
+            </v-chip>
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-btn text small @click="$router.push(`/products/${item._id}`)">
+              Open
+            </v-btn>
+          </template>
+          <template v-slot:no-results
+            >Product not found.
+            <v-dialog v-model="addProduct" persistent max-width="1000px">
+              <template v-slot:activator="{ on, attrs }"
+                ><v-btn
+                  small
+                  outlined
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="prodName = search"
+                  >Add as New</v-btn
+                ></template
+              >
+              <CreateProduct
+                :productname="search"
+                @postProd="postProduct"
+                @cancelAdd="addProduct = false"
+              ></CreateProduct> </v-dialog
+          ></template> </v-data-table
+      ></v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+import { mapActions, mapState } from 'vuex'
+export default {
+  data() {
+    return {
+      search: '',
+      addProduct: false,
+      filterKeywords: [],
+      headers: [
+        { text: 'Product', value: 'name' },
+        {
+          text: 'Keywords',
+          value: 'keywords',
+          filter: (value) => {
+            if (!this.filterKeywords.length) return true
+            // Pick up here
+            return this.filterKeywords.includes(value)
+          },
+        },
+        { text: 'Brand', value: 'brand' },
+        { text: 'Vendor', value: 'vendor' },
+        { text: 'Cost', value: 'cost' },
+        { text: 'Price', value: 'price' },
+        { text: 'Action', value: 'actions' },
+      ],
+    }
+  },
+  computed: {
+    ...mapState(['products', 'keywords']),
+  },
+  mounted() {
+    this.fetchKeywords()
+    return this.fetchProducts()
+  },
+  methods: {
+    postProduct(prod) {
+      console.log(prod)
+      const product = {
+        name: prod.name,
+        vendor: prod.vendor,
+        keywords: prod.keywords,
+        brand: prod.brand,
+        model: prod.model,
+        sn: prod.sn,
+        cost: prod.cost,
+        price: prod.price,
+        qty: prod.qty,
+      }
+      this.addProduct = false
+      // console.log(product)
+      this.createProduct(product)
+    },
+    addToFilter(k) {
+      if (this.filterKeywords.includes(k)) {
+        const index = this.filterKeywords.indexOf(k)
+        return this.filterKeywords.splice(index, 1)
+      }
+      this.filterKeywords.push(k)
+      console.log(k)
+    },
+    ...mapActions(['fetchProducts', 'fetchKeywords', 'createProduct']),
+  },
+}
+</script>
+
+<style lang="scss" scoped></style>
