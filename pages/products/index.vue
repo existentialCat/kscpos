@@ -1,8 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>Total Products: {{ products.length }}</v-col>
-      <v-col>Total On Hand: calculate</v-col>
+      <v-col><b>Total Products:</b> {{ products.length }}</v-col>
+      <v-col><b>Total On Hand:</b> {{ computedQuantity }}</v-col>
+      <v-col><b>Cost Price Total:</b> ${{ computedCostTotal }}</v-col>
+      <v-col><b>List Price Total:</b> ${{ computedPriceTotal }}</v-col>
     </v-row>
     <v-row>
       <v-col
@@ -118,6 +120,27 @@ export default {
     }
   },
   computed: {
+    computedQuantity() {
+      const onlyQty = this.products.map((p) => p.qty)
+      const total = onlyQty.reduce((a, b) => {
+        return a + b
+      })
+      return total
+    },
+    computedCostTotal() {
+      const onlyCost = this.products.map((p) => p.cost)
+      const total = onlyCost.reduce((a, b) => {
+        return a + b
+      })
+      return total
+    },
+    computedPriceTotal() {
+      const onlyPrice = this.products.map((p) => p.price)
+      const total = onlyPrice.reduce((a, b) => {
+        return a + b
+      })
+      return total
+    },
     ...mapState(['products', 'keywords']),
   },
   mounted() {

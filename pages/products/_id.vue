@@ -72,37 +72,108 @@
           }}</v-btn>
         </v-card>
       </v-col>
-      <v-col lg="2">
+      <v-col lg="3">
         <v-card elevation="1">
           <v-card-title>Vendor</v-card-title>
           <v-card-text>
-            <v-row>
-              <v-col>{{ product.vendor }}</v-col>
+            <v-row v-if="vendorEdit">
+              <v-col v-if="vendorEdit">
+                <v-text-field
+                  ref="vendor"
+                  v-model="newVendor"
+                  label="Vendor"
+                  outlined
+                ></v-text-field>
+              </v-col>
             </v-row>
+            <v-row
+              ><v-col>{{ product.vendor }}</v-col></v-row
+            >
           </v-card-text>
-          <v-btn text small>Edit</v-btn>
+          <v-btn v-if="vendorEdit" text small @click="updateProd('vendor')"
+            >Save</v-btn
+          >
+          <v-btn text small @click="editVendor">{{
+            vendorEdit ? 'Close' : 'Change'
+          }}</v-btn>
         </v-card>
       </v-col>
       <v-col lg="2">
         <v-card elevation="1">
           <v-card-title>Our Cost</v-card-title>
           <v-card-text>
-            <v-row>
-              <v-col>${{ product.cost }}</v-col>
+            <v-row v-if="costEdit">
+              <v-col v-if="costEdit">
+                <v-text-field
+                  ref="cost"
+                  v-model="newCost"
+                  label="Cost"
+                  outlined
+                ></v-text-field>
+              </v-col>
             </v-row>
+            <v-row
+              ><v-col>{{ product.cost }}</v-col></v-row
+            >
           </v-card-text>
-          <v-btn text small>Edit</v-btn>
+          <v-btn v-if="costEdit" text small @click="updateProd('cost')"
+            >Save</v-btn
+          >
+          <v-btn text small @click="editCost">{{
+            costEdit ? 'Close' : 'Change'
+          }}</v-btn>
         </v-card>
       </v-col>
       <v-col lg="2">
         <v-card elevation="1">
           <v-card-title>Sale Price</v-card-title>
           <v-card-text>
-            <v-row>
-              <v-col>${{ product.price }}</v-col>
+            <v-row v-if="priceEdit">
+              <v-col v-if="priceEdit">
+                <v-text-field
+                  ref="price"
+                  v-model="newPrice"
+                  label="Price"
+                  outlined
+                ></v-text-field>
+              </v-col>
             </v-row>
+            <v-row
+              ><v-col>{{ product.price }}</v-col></v-row
+            >
           </v-card-text>
-          <v-btn text small>Edit</v-btn>
+          <v-btn v-if="priceEdit" text small @click="updateProd('price')"
+            >Save</v-btn
+          >
+          <v-btn text small @click="editPrice">{{
+            priceEdit ? 'Close' : 'Change'
+          }}</v-btn>
+        </v-card>
+      </v-col>
+      <v-col lg="2">
+        <v-card elevation="1">
+          <v-card-title>Quantity</v-card-title>
+          <v-card-text>
+            <v-row v-if="qtyEdit">
+              <v-col v-if="qtyEdit">
+                <v-text-field
+                  ref="qty"
+                  v-model="newQty"
+                  label="Qty"
+                  outlined
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row
+              ><v-col>{{ product.qty }}</v-col></v-row
+            >
+          </v-card-text>
+          <v-btn v-if="qtyEdit" text small @click="updateProd('qty')"
+            >Save</v-btn
+          >
+          <v-btn text small @click="editQty">{{
+            qtyEdit ? 'Close' : 'Change or Add'
+          }}</v-btn>
         </v-card>
       </v-col>
     </v-row>
@@ -153,6 +224,30 @@ export default {
       this.keywordsEdit = true
       // this.$nextTick(() => this.$refs.name.focus())
       this.newKeywords = this.product.keywords
+    },
+    editVendor() {
+      if (this.vendorEdit) return (this.vendorEdit = false)
+      this.vendorEdit = true
+      this.$nextTick(() => this.$refs.vendor.focus())
+      this.newQty = this.product.vendor
+    },
+    editCost() {
+      if (this.costEdit) return (this.costEdit = false)
+      this.costEdit = true
+      this.$nextTick(() => this.$refs.cost.focus())
+      this.newQty = this.product.cost
+    },
+    editPrice() {
+      if (this.priceEdit) return (this.priceEdit = false)
+      this.priceEdit = true
+      this.$nextTick(() => this.$refs.price.focus())
+      this.newQty = this.product.price
+    },
+    editQty() {
+      if (this.qtyEdit) return (this.qtyEdit = false)
+      this.qtyEdit = true
+      this.$nextTick(() => this.$refs.qty.focus())
+      this.newQty = this.product.qty
     },
     updateProd(field) {
       if (field === 'name') {
