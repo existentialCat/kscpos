@@ -65,6 +65,25 @@
                 @postProd="postProduct"
                 @cancelAdd="addProduct = false"
               ></CreateProduct> </v-dialog
+          ></template>
+          <template v-slot:no-data
+            >No inventory.
+            <v-dialog v-model="addProduct" persistent max-width="1000px">
+              <template v-slot:activator="{ on, attrs }"
+                ><v-btn
+                  small
+                  outlined
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="prodName = search"
+                  >Add as New</v-btn
+                ></template
+              >
+              <CreateProduct
+                :productname="search"
+                @postProd="postProduct"
+                @cancelAdd="addProduct = false"
+              ></CreateProduct> </v-dialog
           ></template> </v-data-table
       ></v-col>
     </v-row>
