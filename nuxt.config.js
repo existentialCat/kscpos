@@ -11,7 +11,7 @@ export default {
    ** See https://nuxtjs.org/api/configuration-head
    */
   server: {
-    host: 'localhost',
+    host: process.env.HOST || 'localhost',
     port: 80,
   },
   head: {
@@ -107,7 +107,7 @@ export default {
     },
   },
   axios: {
-    baseUrl: 'localhost',
+    baseUrl: process.env.HOST | 'localhost',
     port: '9000',
   },
   vuetify: {
