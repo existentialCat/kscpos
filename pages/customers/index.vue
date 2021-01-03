@@ -1,73 +1,98 @@
 <template>
   <v-container>
     <h2>Customers</h2>
-    <v-btn text @click="customerForm = !customerForm">{{
-      customerForm ? 'Cancel' : 'Add Customer'
-    }}</v-btn>
-    <v-card v-if="customerForm" max-width="400">
-      <v-container>
-        <v-text-field
-          v-model="newCustomer.fullName"
-          label="full name"
-        ></v-text-field>
-        <v-text-field v-model="newCustomer.phone" label="phone"></v-text-field>
-        <v-text-field
-          v-model="newCustomer.address"
-          label="address"
-        ></v-text-field>
-        <v-text-field v-model="newCustomer.city" label="city"></v-text-field>
-        <v-text-field v-model="newCustomer.state" label="state"></v-text-field>
-        <v-text-field v-model="newCustomer.zip" label="zip"></v-text-field>
-        <v-btn :disabled="!isValid" @click="saveCustomer()">Save</v-btn>
-      </v-container>
-    </v-card>
-    <v-row justify="center" align="center">
-      <v-row>
-        <v-data-table :items="customers" :headers="headers"></v-data-table>
-      </v-row>
+    <v-row>
+      <v-col
+        ><v-data-table :items="customers" :search="search" :headers="headers">
+          <template v-slot:top>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field
+          ></template>
+          <template v-slot:item.actions="{ item }">
+            <v-btn text small @click="$router.push(`/customers/${item._id}`)">
+              Open
+            </v-btn>
+          </template>
+          <template v-slot:no-results
+            >Customer not found.
+            <v-dialog v-model="addCustomer" persistent max-width="1000px">
+              <template v-slot:activator="{ on, attrs }"
+                ><v-btn
+                  small
+                  outlined
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="custName = search"
+                  >Add as New</v-btn
+                ></template
+              >
+              <CreateCustomer
+                :customername="search"
+                @postCustomer="postCustomer"
+                @cancelAdd="addCustomer = false"
+              ></CreateCustomer> </v-dialog
+          ></template>
+          <template v-slot:no-data
+            >No Customers yet.
+            <v-dialog v-model="addCustomer" persistent max-width="1000px">
+              <template v-slot:activator="{ on, attrs }"
+                ><v-btn
+                  small
+                  outlined
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="custName = search"
+                  >Add as New</v-btn
+                ></template
+              >
+              <CreateCustomer
+                :customername="search"
+                @postCustomer="postCustomer"
+                @cancelAdd="addCustomer = false"
+              ></CreateCustomer> </v-dialog
+          ></template> </v-data-table
+      ></v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
-  middleware: 'auth',
-  components: {},
-  async fetch({ store }) {
-    return await store.dispatch('fetchAllCustomers')
-  },
   data() {
     return {
-      isValid: true,
-      customerForm: false,
-      newCustomer: {
-        fullName: '',
-        phone: '',
-        address: '',
-        city: '',
-        state: '',
-        zip: '',
-      },
+      search: '',
+      addCustomer: false,
       headers: [
-        {
-          text: 'Full Name',
-          align: 'start',
-          sortable: true,
-          value: 'fullName',
-        },
+        { text: 'Customer', value: 'fullName' },
         { text: 'Phone', value: 'phone' },
+        { text: 'Action', value: 'actions', sortable: false },
       ],
     }
   },
   computed: {
     ...mapState(['customers']),
   },
+  mounted() {
+    return this.fetchAllCustomers()
+  },
   methods: {
-    async saveCustomer() {
-      await this.$axios.post('/api/customers', this.newCustomer)
-      this.$router.go()
+    postCustomer(cust) {
+      const customer = {
+        fullName: cust.fullName,
+        phone: cust.phone,
+      }
+      this.addCustomer = false
+      this.createCustomer(customer)
     },
+    ...mapActions(['fetchAllCustomers', 'createCustomer']),
   },
 }
 </script>
+
+<style lang="scss" scoped></style>

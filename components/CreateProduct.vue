@@ -13,22 +13,17 @@
                 label="Name"
               ></v-text-field>
             </v-col>
-            <!-- change to custom v-combobox for on the go keyword creation -->
-            <!-- <v-col lg="3">
-          <v-select
-            v-model="prod.keywords"
-            :items="keywords"
-            outlined
-            multiple
-            item-text="name"
-            item-value="_id"
-            label="Keywords"
-          ></v-select>
-        </v-col> -->
             <v-col cols="12" sm="4" lg="3">
-              <KeywordSelector
+              <!-- <KeywordSelector
                 @updatekeywords="updateKeywords"
-              ></KeywordSelector>
+              ></KeywordSelector> -->
+              <v-select
+                v-model="prod.keywords"
+                :items="keywords"
+                multiple
+                outlined
+                label="Keyword"
+              ></v-select>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
               <v-text-field

@@ -1,6 +1,9 @@
 <template>
   <v-container>
     <v-row>
+      <v-btn text @click="$router.go(-1)">Return to Products</v-btn>
+    </v-row>
+    <v-row>
       <v-col cols="12">
         <v-card elevation="1">
           <v-card-title

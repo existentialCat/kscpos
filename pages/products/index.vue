@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <h2>Products</h2>
     <v-row>
       <v-col><b>Total Products:</b> {{ products.length }}</v-col>
       <v-col v-if="products.length"
@@ -49,6 +50,9 @@
             <v-chip v-for="keyword in item.keywords" :key="keyword._id" small>
               {{ keyword.name }}
             </v-chip>
+          </template>
+          <template v-slot:item.price="{ item }">
+            <b>${{ item.price }}</b>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn text small @click="$router.push(`/products/${item._id}`)">
@@ -113,15 +117,20 @@ export default {
           value: 'keywords',
           filter: (value) => {
             if (!this.filterKeywords.length) return true
-            // Pick up here
-            return this.filterKeywords.includes(value)
+            if (!value.length) return false
+            const valKeywords = value.map((vk) => vk.name)
+            const keywords = this.filterKeywords.map((k) => k.name)
+            for (const i in valKeywords) {
+              if (keywords.includes(valKeywords[i])) return true
+            }
           },
+          sortable: false,
         },
         { text: 'Brand', value: 'brand' },
-        { text: 'Vendor', value: 'vendor' },
+        // { text: 'Vendor', value: 'vendor' },
         { text: 'Cost', value: 'cost' },
         { text: 'Price', value: 'price' },
-        { text: 'Action', value: 'actions' },
+        { text: 'Action', value: 'actions', sortable: false },
       ],
     }
   },
@@ -161,7 +170,6 @@ export default {
   },
   methods: {
     postProduct(prod) {
-      console.log(prod)
       const product = {
         name: prod.name,
         vendor: prod.vendor,
@@ -174,7 +182,6 @@ export default {
         qty: prod.qty,
       }
       this.addProduct = false
-      // console.log(product)
       this.createProduct(product)
     },
     addToFilter(k) {
@@ -183,7 +190,6 @@ export default {
         return this.filterKeywords.splice(index, 1)
       }
       this.filterKeywords.push(k)
-      console.log(k)
     },
     ...mapActions(['fetchProducts', 'fetchKeywords', 'createProduct']),
   },

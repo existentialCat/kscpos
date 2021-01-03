@@ -61,33 +61,33 @@ export default {
       items: [
         {
           icon: 'mdi-apps',
-          title: 'Workbench',
-          to: '/workbench',
-        },
-        {
-          icon: 'mdi-apps',
           title: 'Orders',
           to: '/orders',
         },
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-account-multiple',
           title: 'Customers',
           to: '/customers',
         },
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-wrench',
           title: 'Services',
           to: '/services',
         },
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-barcode-scan',
           title: 'Products',
           to: '/products',
         },
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-format-list-bulleted-type',
           title: 'Transactions',
           to: '/transactions',
+        },
+        {
+          icon: 'mdi-cart-outline',
+          title: 'Quick Sale',
+          to: '/quicksale',
         },
       ],
       miniVariant: false,

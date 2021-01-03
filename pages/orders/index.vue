@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h2>All Orders</h2>
+    <h2>Orders</h2>
     <v-data-table :items="orders" :headers="headers">
       <template v-slot:item.created="{ item }">
         <span>{{ new Date(item.created).toLocaleString() }}</span>
@@ -40,7 +40,7 @@ export default {
       headers: [
         { text: 'Customer Name', value: 'customer.fullName' },
         { text: 'Created', value: 'created' },
-        { text: 'Completed', value: 'completed' },
+        { text: 'Picked Up', value: 'completed' },
         { text: 'Systems', value: 'systems' },
         { text: 'Transaction', value: 'transaction' },
         { text: 'Action', value: '_id' },

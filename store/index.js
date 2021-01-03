@@ -2,7 +2,6 @@ export const strict = false
 export const state = () => ({
   orders: [],
   order: {},
-  productcats: [],
   transactions: [],
   transaction: {},
   customers: [],
@@ -14,6 +13,7 @@ export const state = () => ({
   systems: [],
   system: {},
   keywords: [],
+  categories: [],
 })
 export const mutations = {
   ADD_ORDER(state, order) {
@@ -40,8 +40,14 @@ export const mutations = {
   SET_SERVICES(state, services) {
     state.services = services
   },
+  SET_SERVICE(state, service) {
+    state.service = service
+  },
   SET_CUSTOMER(state, customer) {
     state.customer = customer
+  },
+  ADD_CUSTOMER(state, customer) {
+    state.customers.push(customer)
   },
   UPDATE_ORDER(state, upOrder) {
     const index = state.orders.findIndex((order) => order.id === upOrder.id)
@@ -58,6 +64,12 @@ export const mutations = {
   },
   ADD_KEYWORD(state, keyword) {
     state.keywords.push(keyword)
+  },
+  SET_CATEGORIES(state, categories) {
+    state.categories = categories
+  },
+  ADD_CATEGORY(state, category) {
+    state.categories.push(category)
   },
 }
 export const getters = {
@@ -77,6 +89,16 @@ export const actions = {
   async addKeyword({ commit }, keyword) {
     await this.$axios.post('/api/keywords', keyword).then((res) => {
       commit('ADD_KEYWORD', res.data)
+    })
+  },
+  async fetchCategories({ commit }) {
+    await this.$axios.get('/api/categories').then((res) => {
+      commit('SET_CATEGORIES', res.data)
+    })
+  },
+  async addCategory({ commit }, category) {
+    await this.$axios.post('/api/categories', category).then((res) => {
+      commit('ADD_CATEGORY', res.data)
     })
   },
   async logout({ commit }) {
@@ -114,17 +136,6 @@ export const actions = {
       })
       .catch((error) => {
         console.log('failed on fetchOrder action' + error)
-      })
-  },
-  async fetchAllCustomers({ commit }) {
-    return await this.$axios
-      .get('/api/customers')
-      .then((res) => {
-        commit('SET_CUSTOMERS', res.data)
-        return res.data
-      })
-      .catch((error) => {
-        console.log('failed on fetchAllCustomers action' + error)
       })
   },
   async fetchProducts({ commit }) {
@@ -176,6 +187,46 @@ export const actions = {
       })
       .catch((error) => {
         console.log('failed on fetchServices action' + error)
+      })
+  },
+  async fetchService({ commit }, id) {
+    return await this.$axios
+      .get(`/api/services/${id}`)
+      .then((res) => {
+        commit('SET_SERVICE', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log('failed on fetchService action' + error)
+      })
+  },
+  async updateService({ commit }, service) {
+    await this.$axios
+      .put(`/api/services/${service._id}`, service)
+      .then((res) => {
+        commit('SET_SERVICE', res.data)
+      })
+  },
+  async fetchAllCustomers({ commit }) {
+    return await this.$axios
+      .get('/api/customers')
+      .then((res) => {
+        commit('SET_CUSTOMERS', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log('failed on fetchAllCustomers action' + error)
+      })
+  },
+  async createCustomer({ commit }, customer) {
+    return await this.$axios
+      .post(`/api/customers/`, customer)
+      .then((res) => {
+        commit('ADD_CUSTOMER', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log('failed on createCustomer action' + error)
       })
   },
 }
