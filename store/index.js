@@ -1,5 +1,7 @@
 export const strict = false
 export const state = () => ({
+  cart: [],
+  taxrate: 1.0725,
   orders: [],
   order: {},
   transactions: [],
