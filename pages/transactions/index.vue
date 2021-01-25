@@ -1,9 +1,20 @@
 <template>
-  <div></div>
+  <div>{{ transactions }}</div>
 </template>
 
 <script>
-export default {}
+import { mapActions, mapState } from 'vuex'
+export default {
+  computed: {
+    ...mapState(['transactions']),
+  },
+  mounted() {
+    this.fetchAllTransactions()
+  },
+  methods: {
+    ...mapActions(['fetchAllTransactions']),
+  },
+}
 </script>
 
 <style lang="scss" scoped></style>

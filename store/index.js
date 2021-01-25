@@ -73,6 +73,15 @@ export const mutations = {
   ADD_CATEGORY(state, category) {
     state.categories.push(category)
   },
+  SET_TRANSACTIONS(state, transactions) {
+    state.transactions = transactions
+  },
+  SET_TRANSACTION(state, transaction) {
+    state.transaction = transaction
+  },
+  ADD_TRANSACTION(state, transaction) {
+    state.transactions.push(transaction)
+  },
 }
 export const getters = {
   getOrderById: (state) => (id) => {
@@ -229,6 +238,39 @@ export const actions = {
       })
       .catch((error) => {
         console.log('failed on createCustomer action' + error)
+      })
+  },
+  async createTransaction({ commit }, transaction) {
+    return await this.$axios
+      .post('/api/transactions', transaction)
+      .then((res) => {
+        commit('ADD_TRANSACTION', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  async fetchTransaction({ commit }, id) {
+    return await this.$axios
+      .get(`/api/transactions/${id}`)
+      .then((res) => {
+        commit('SET_TRANSACTION', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  async fetchAllTransactions({ commit }) {
+    return await this.$axios
+      .get('/api/transactions')
+      .then((res) => {
+        commit('SET_TRANSACTIONS', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log(error)
       })
   },
 }

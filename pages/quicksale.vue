@@ -217,9 +217,11 @@
         </v-row>
         <v-row>
           <v-col>
-            <v-btn color="primary" :disabled="balanceDue === 0"
-              >Collect Payment</v-btn
+            <CollectPayment
+              :products="chosenProducts.map((p) => p._id)"
+              :balancedue="parseFloat(balanceDue).toFixed(2)"
             >
+            </CollectPayment>
           </v-col>
         </v-row>
       </v-col>
