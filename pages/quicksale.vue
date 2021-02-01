@@ -208,7 +208,7 @@
           <v-col>
             <v-card>
               <v-card-text
-                ><h4>Subtotal: ${{ balanceDue - taxesDue }}</h4>
+                ><h4>Subtotal: ${{ subtotalDue }}</h4>
                 <h4>Sales Tax: ${{ taxesDue }}</h4>
                 <h2>Balance Due: ${{ balanceDue }}</h2></v-card-text
               ></v-card
@@ -217,10 +217,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <CollectPayment
-              :products="chosenProducts.map((p) => p._id)"
-              :balancedue="parseFloat(balanceDue).toFixed(2)"
-            >
+            <CollectPayment :products="chosenProducts" :balancedue="balanceDue">
             </CollectPayment>
           </v-col>
         </v-row>
@@ -270,39 +267,46 @@ export default {
     }
   },
   computed: {
-    balanceDue() {
-      const taxedProducts = this.chosenProducts.map((p) => {
-        if (p.taxable) {
-          const calculated = p.price * p.incart * this.taxrate
-          return Math.round(calculated * 100) / 100
+    subtotalDue() {
+      const subtotal = this.chosenProducts.map((p) => {
+        const multiplied = p.price * p.incart
+        const format = multiplied.toFixed(2)
+        if (p.incart > 0) return (format * 100) / 100
+        else {
+          const format = p.price.toFixed(2)
+          return (format * 100) / 100
         }
       })
-      const untaxed = this.chosenProducts.map((p) => {
-        if (!p.taxable) {
-          return p.price * p.incart
-        }
-      })
-      if (this.chosenProducts.length) {
-        const taxedTotal = taxedProducts.reduce((a, b) => {
-          return a + b
-        })
-        const untaxedTotal = untaxed.reduce((a, b) => {
-          return a + b
-        })
-        const rounded = Math.round(taxedTotal * 100) / 100
-        if (untaxedTotal) {
-          return taxedTotal + untaxedTotal
-        } else return parseFloat(rounded).toFixed(2)
+      if (subtotal.length > 0) {
+        const sum = subtotal.reduce((a, b) => a + b)
+        return sum
       } else return 0
     },
     taxesDue() {
       if (this.chosenProducts.length) {
-        const subtotal = this.chosenProducts
-          .map((p) => p.price * p.incart)
-          .reduce((a, b) => a + b)
-        const rounded = Math.round((this.balanceDue - subtotal) * 100) / 100
-        return parseFloat(rounded).toFixed(2)
+        const taxes = this.chosenProducts.map((p) => {
+          if (p.taxable) {
+            if (p.incart > 0) {
+              const subtotal = p.price * p.incart
+              const calculateTax = subtotal * (this.taxrate - 1)
+              const format = calculateTax.toFixed(2)
+              return (format * 100) / 100
+            }
+          } else return 0
+        })
+        if (taxes.length > 0) {
+          const sum = taxes.reduce((a, b) => a + b)
+          const format = sum.toFixed(2)
+          return format
+        } else return 0
       } else return 0
+    },
+    balanceDue() {
+      const formatSubTotal = (this.subtotalDue * 100) / 100
+      const formatTaxes = (this.taxesDue * 100) / 100
+      const sum = formatSubTotal + formatTaxes
+      const formatSum = sum.toFixed(2)
+      return formatSum
     },
     ...mapState(['customers', 'products', 'keywords', 'taxrate']),
   },

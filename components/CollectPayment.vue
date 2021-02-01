@@ -145,10 +145,13 @@ export default {
       )
     },
     processPay() {
-      if (this.fromCustomer >= this.balancedue) {
+      console.log(this.products)
+      const sufficientPay =
+        this.fromCustomer >= parseFloat(this.balancedue).toFixed(2)
+      const difference = parseFloat(this.fromCustomer - this.balancedue)
+      if (sufficientPay) {
         this.paidinfull = true
-        console.log(this.transactionContext)
-        this.change = parseFloat(this.fromCustomer - this.balancedue).toFixed(2)
+        this.change = difference.toFixed(2)
         this.transactionToPost.context = this.transactionContext
         this.transactionToPost.products = this.products
         this.transactionToPost.services = this.services

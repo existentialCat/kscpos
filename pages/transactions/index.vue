@@ -1,10 +1,137 @@
 <template>
-  <div>{{ transactions }}</div>
+  <v-container>
+    <h2>Transactions</h2>
+    <v-row>
+      <v-col v-if="transactions.length"
+        ><b>Total Unfinished or Stashed:</b> calculate
+      </v-col>
+      <v-col v-if="transactions.length"
+        ><b>Sales Tax Collected:</b> calculate
+      </v-col>
+      <v-col v-if="transactions.length"
+        ><b>Number of completed quick-sale:</b> calculate</v-col
+      >
+      <v-col v-if="transactions.length"
+        ><b>Number of completed work orders:</b> calculate</v-col
+      >
+    </v-row>
+    <v-row>
+      <v-col
+        ><v-data-table
+          ref="transtable"
+          :items="transactions"
+          :search="search"
+          :headers="headers"
+        >
+          <template v-slot:top>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field
+            ><v-row align="center" class="pa-4"
+              >Filter:
+              <v-chip
+                class="ma-1"
+                :color="!filterSelected.length ? 'primary' : ''"
+                @click="filterSelected = []"
+                >All</v-chip
+              ><v-chip
+                v-for="(filter, index) in filterBy"
+                :key="index"
+                class="ma-1"
+                :color="filterSelected.includes(filter) ? 'primary' : ''"
+                @click="addToFilter(filter)"
+                >{{ filter }}</v-chip
+              ></v-row
+            ></template
+          >
+          <template v-slot:item.created="{ item }">
+            <div style="max-width: 15px !important">
+              {{ new Date(item.created).toLocaleString() }}
+            </div>
+          </template>
+          <template v-slot:item.completed="{ item }">
+            <div style="max-width: 15px !important">
+              {{
+                item.completed
+                  ? new Date(item.completed).toLocaleString()
+                  : 'False'
+              }}
+            </div>
+          </template>
+          <template v-slot:item.products="{ item }">
+            <div v-for="(product, index) in item.products" :key="product._id">
+              {{ product.name
+              }}{{ item.products.length - 1 > index ? ',' : '' }}
+            </div>
+          </template>
+          <template v-slot:item.services="{ item }">
+            <div v-for="(service, index) in item.services" :key="service._id">
+              {{ service.name
+              }}{{ item.services.length - 1 > index ? ',' : '' }}
+            </div>
+          </template>
+          <template v-slot:item.subtotal="{ item }">
+            <b>${{ item.subtotal }}</b>
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-btn
+              text
+              small
+              @click="$router.push(`/transactions/${item._id}`)"
+            >
+              Open
+            </v-btn>
+          </template>
+          <template v-slot:no-results
+            >Transaction not found under that search.</template
+          >
+          <template v-slot:no-data>No transactions></template>
+        </v-data-table></v-col
+      >
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
+  data() {
+    return {
+      search: '',
+      filterBy: ['quick-sale', 'completed', 'incomplete', 'work-order'],
+      filterSelected: [],
+      headers: [
+        { text: 'Created', value: 'created' },
+        { text: 'Completed', value: 'completed' },
+        {
+          text: 'Context',
+          value: 'context',
+          filter: (value) => {
+            if (!this.filterSelected.length) return true
+            // if (!value.length) return false
+            // const valKeywords = value.map((vk) => vk)
+            // const keywords = this.filterSelected.map((k) => k)
+            // for (const i in valKeywords) {
+            //   if (keywords.includes(valKeywords[i])) return true
+            // }
+            return this.filterSelected.includes(value)
+          },
+          sortable: false,
+        },
+        { text: 'Products', value: 'products' },
+        // { text: 'Vendor', value: 'vendor' },
+        { text: 'Services', value: 'services' },
+        { text: 'Subtotal', value: 'subtotal' },
+        { text: 'Tax', value: 'taxes' },
+        { text: 'Balance Due', value: 'balanceDue' },
+        { text: 'Action', value: 'actions', sortable: false },
+      ],
+    }
+  },
   computed: {
     ...mapState(['transactions']),
   },
@@ -12,6 +139,13 @@ export default {
     this.fetchAllTransactions()
   },
   methods: {
+    addToFilter(k) {
+      if (this.filterSelected.includes(k)) {
+        const index = this.filterSelected.indexOf(k)
+        return this.filterSelected.splice(index, 1)
+      }
+      this.filterSelected.push(k)
+    },
     ...mapActions(['fetchAllTransactions']),
   },
 }

@@ -30,7 +30,7 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  middleware: 'auth',
+  // middleware: 'auth',
   components: {},
   async fetch({ store }) {
     return await store.dispatch('fetchAllOrders')
