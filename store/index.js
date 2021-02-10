@@ -1,4 +1,4 @@
-export const strict = false
+export default false
 export const state = () => ({
   cart: [],
   taxrate: 1.0725,
@@ -271,6 +271,18 @@ export const actions = {
       })
       .catch((error) => {
         console.log(error)
+      })
+  },
+  async createOrder({ commit }, order) {
+    console.log(order)
+    return await this.$axios
+      .post('/api/orders', order)
+      .then((res) => {
+        commit('ADD_ORDER', res.data)
+        return res.data
+      })
+      .catch((err) => {
+        console.log(err)
       })
   },
 }

@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <h2>Orders</h2>
+    <CreateOrder></CreateOrder>
     <v-data-table :items="orders" :headers="headers">
       <template v-slot:item.created="{ item }">
         <span>{{ new Date(item.created).toLocaleString() }}</span>
@@ -21,7 +22,9 @@
         >
       </template>
       <template v-slot:item._id="{ item }">
-        <v-btn text small nuxt :to="'/orders/' + item._id">Open</v-btn>
+        <v-btn color="primary" text small nuxt :to="'/orders/' + item._id"
+          >Open</v-btn
+        >
       </template>
     </v-data-table>
   </v-container>
