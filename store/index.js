@@ -16,6 +16,8 @@ export const state = () => ({
   system: {},
   keywords: [],
   categories: [],
+  chosenProducts: [],
+  chosenServices: [],
 })
 export const mutations = {
   ADD_ORDER(state, order) {
@@ -82,6 +84,37 @@ export const mutations = {
   ADD_TRANSACTION(state, transaction) {
     state.transactions.push(transaction)
   },
+  ADD_CHOSEN_PRODUCT(state, product) {
+    if (!state.chosenProducts.includes(product)) {
+      product.incart = 1
+      state.chosenProducts.push(product)
+    } else {
+      const index = state.chosenProducts.indexOf(product)
+      state.chosenProducts[index].incart =
+        state.chosenProducts[index].incart + 1
+    }
+  },
+  REMOVE_CHOSEN_PRODUCT(state, product) {
+    const index = state.chosenProducts.indexOf(product)
+    if (product.incart > 1) {
+      state.chosenProducts[index].incart -= 1
+    } else if (product.incart === 1) {
+      return state.chosenProducts.splice(index, 1)
+    }
+  },
+  CLEAR_CHOSEN_PRODUCTS(state) {
+    state.chosenProducts = []
+  },
+  ADD_CHOSEN_SERVICE(state, product) {
+    state.chosenServices.push(product)
+  },
+  REMOVE_CHOSEN_SERVICE(state, product) {
+    const index = state.chosenService.indexOf(product)
+    if (index !== -1) state.chosenServices.splice(index, 1)
+  },
+  CLEAR_CHOSEN_SERVICES(state) {
+    state.chosenServices = []
+  },
 }
 export const getters = {
   getOrderById: (state) => (id) => {
@@ -92,6 +125,24 @@ export const getters = {
   },
 }
 export const actions = {
+  addChosenProduct({ commit }, product) {
+    commit('ADD_CHOSEN_PRODUCT', product)
+  },
+  removeChosenProduct({ commit }, product) {
+    commit('REMOVE_CHOSEN_PRODUCT', product)
+  },
+  clearChosenProducts({ commit }) {
+    commit('CLEAR_CHOSEN_PRODUCTS')
+  },
+  addChosenService({ commit }, service) {
+    commit('ADD_CHOSEN_SERVICE', service)
+  },
+  removeChosenService({ commit }, service) {
+    commit('REMOVE_CHOSEN_SERVICE', service)
+  },
+  clearChosenServices({ commit }) {
+    commit('CLEAR_CHOSEN_SERVICES')
+  },
   async fetchKeywords({ commit }) {
     await this.$axios.get('/api/keywords').then((res) => {
       commit('SET_KEYWORDS', res.data)
