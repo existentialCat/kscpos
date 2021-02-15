@@ -376,6 +376,7 @@ export const actions = {
       .post('/api/orders', order)
       .then((res) => {
         commit('ADD_ORDER', res.data)
+        console.log(res.data)
         return res.data
       })
       .catch((err) => {
