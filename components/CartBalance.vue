@@ -22,6 +22,23 @@
                 >
               </v-col>
             </v-row>
+            <v-row v-for="service in chosenServices" :key="service._id">
+              <v-col v-if="service.incart" cols="2">
+                x{{ service.incart }}
+              </v-col>
+              <v-col>
+                {{ service.name }}
+              </v-col>
+              <v-col> ${{ service.price }} </v-col>
+              <v-col>
+                <v-btn
+                  color="error"
+                  x-small
+                  @click="removeChosenService(service)"
+                  >Remove</v-btn
+                >
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-col>
@@ -37,9 +54,13 @@
         >
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="!noaction">
       <v-col>
-        <CollectPayment :products="chosenProducts" :balancedue="balanceDue">
+        <CollectPayment
+          :products="chosenProducts"
+          :services="chosenServices"
+          :balancedue="balanceDue"
+        >
         </CollectPayment>
       </v-col>
     </v-row>
@@ -50,10 +71,19 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+  props: {
+    noaction: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
+    chosenItems() {
+      return this.chosenProducts.concat(this.chosenServices)
+    },
     subtotalDue() {
-      if (this.chosenProducts) {
-        const subtotal = this.chosenProducts.map((p) => {
+      if (this.chosenItems) {
+        const subtotal = this.chosenItems.map((p) => {
           const multiplied = p.price * p.incart
           const format = multiplied.toFixed(2)
           if (p.incart > 0) return (format * 100) / 100
@@ -70,7 +100,7 @@ export default {
     },
     taxesDue() {
       if (this.chosenProducts && this.chosenProducts.length) {
-        const taxes = this.chosenProducts.map((p) => {
+        const taxes = this.chosenItems.map((p) => {
           if (p.taxable) {
             if (p.incart > 0) {
               const subtotal = p.price * p.incart
@@ -94,10 +124,10 @@ export default {
       const formatSum = sum.toFixed(2)
       return formatSum
     },
-    ...mapState(['taxrate', 'chosenProducts']),
+    ...mapState(['taxrate', 'chosenProducts', 'chosenServices']),
   },
   methods: {
-    ...mapActions(['removeChosenProduct']),
+    ...mapActions(['removeChosenProduct', 'removeChosenService']),
   },
 }
 </script>

@@ -1,45 +1,169 @@
 <template>
-  <v-combobox
-    v-model="select"
-    label="Service[s]"
-    chips
+  <v-data-table
+    ref="servtable"
     :items="services"
-    hide-selected
-    item-text="name"
-    multiple
+    :search="serviceSearch"
+    :items-per-page="itemsperpage"
+    :headers="$route.path == '/services' ? serviceHeaders : serviceHeadersMin"
   >
-    <template v-slot:selection="service">
-      <v-chip
-        :key="JSON.stringify(service.item.name)"
-        v-bind="service.attrs"
-        :input-value="service.selected"
-        :disabled="service.disabled"
-        @click:close="service.parent.selectItem(data.item)"
-        >{{ `${service.item.name} $${service.item.price}`
-        }}<v-icon small @click="service.parent.selectItem(service.item)">
-          mdi-close
-        </v-icon></v-chip
+    <template v-slot:top>
+      <v-text-field
+        v-model="serviceSearch"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field
+      ><v-row v-if="$route.path == '/services'" align="center" class="pa-4"
+        >Filter:
+        <v-chip
+          class="ma-1"
+          :color="!filterKeywords.length ? 'primary' : ''"
+          @click="filterKeywords = []"
+          >All</v-chip
+        ><v-chip
+          v-for="keyword in keywords"
+          :key="keyword._id"
+          class="ma-1"
+          :color="filterKeywords.includes(keyword) ? 'primary' : ''"
+          @click="addToFilter(keyword)"
+          >{{ keyword.name }}</v-chip
+        ></v-row
       ></template
-    ></v-combobox
-  >
+    >
+    <template v-if="$route.path == '/services'" v-slot:item.keywords="{ item }">
+      <v-chip v-for="keyword in item.keywords" :key="keyword._id" small>
+        {{ keyword.name }}
+      </v-chip>
+    </template>
+    <template v-slot:item.price="{ item }">
+      <b>${{ item.price }}</b>
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-btn
+        v-if="$route.path == '/services'"
+        text
+        small
+        @click="$router.push(`/services/${item._id}`)"
+        >Open</v-btn
+      >
+      <v-btn v-else text small @click="addChosenService(item)"> Add </v-btn>
+    </template>
+    <template v-slot:no-results
+      >Service not found.
+      <v-dialog v-model="addService" persistent max-width="1000px">
+        <template v-slot:activator="{ on, attrs }"
+          ><v-btn
+            small
+            outlined
+            v-bind="attrs"
+            v-on="on"
+            @click="servName = serviceSearch"
+            >Add as New</v-btn
+          ></template
+        >
+        <CreateService
+          :servicename="serviceSearch"
+          @postServ="postService"
+          @cancelAdd="addService = false"
+        ></CreateService> </v-dialog
+    ></template>
+    <template v-slot:no-data
+      >No inventory.
+      <v-dialog v-model="addService" persistent max-width="1000px">
+        <template v-slot:activator="{ on, attrs }"
+          ><v-btn
+            small
+            outlined
+            v-bind="attrs"
+            v-on="on"
+            @click="servName = serviceSearch"
+            >Add as New</v-btn
+          ></template
+        >
+        <CreateService
+          :servicename="serviceSearch"
+          @postServ="postService"
+          @cancelAdd="addService = false"
+        ></CreateService> </v-dialog
+    ></template>
+  </v-data-table>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
 export default {
+  props: {
+    itemsperpage: {
+      type: [Number, String],
+      default: 10,
+    },
+  },
   data() {
     return {
-      select: [],
+      serviceSearch: '',
+      addService: false,
+      serviceHeadersMin: [
+        { text: 'Service', value: 'name' },
+        { text: 'Price', value: 'price' },
+        { text: 'Action', value: 'actions', sortable: false },
+      ],
+      serviceHeaders: [
+        { text: 'Service', value: 'name' },
+        {
+          text: 'Keywords',
+          value: 'keywords',
+          filter: (value) => {
+            if (!this.filterKeywords.length) return true
+            if (!value.length) return false
+            const valKeywords = value.map((vk) => vk.name)
+            const keywords = this.filterKeywords.map((k) => k.name)
+            for (const i in valKeywords) {
+              if (keywords.includes(valKeywords[i])) return true
+            }
+          },
+          sortable: false,
+        },
+        { text: 'Brand', value: 'brand' },
+        { text: 'Price', value: 'price' },
+        { text: 'Action', value: 'actions', sortable: false },
+      ],
+      filterKeywords: [],
     }
   },
   computed: {
-    ...mapState(['services']),
+    ...mapState(['services', 'keywords', 'chosenServices']),
   },
-  mounted() {
+  created() {
     this.fetchServices()
+    this.clearChosenServices()
   },
   methods: {
-    ...mapActions(['fetchServices']),
+    postService(serv) {
+      const service = {
+        name: serv.name,
+        cost: serv.cost,
+        price: serv.price,
+        qty: serv.qty,
+      }
+      this.addService = false
+      this.createService(service)
+    },
+    addToFilter(k) {
+      if (this.filterKeywords.includes(k)) {
+        const index = this.filterKeywords.indexOf(k)
+        return this.filterKeywords.splice(index, 1)
+      }
+      this.filterKeywords.push(k)
+    },
+    ...mapActions([
+      'fetchServices',
+      'createService',
+      'fetchKeywords',
+      'addChosenService',
+      'removeChosenService',
+      'clearChosenServices',
+    ]),
   },
 }
 </script>

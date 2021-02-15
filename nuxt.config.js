@@ -15,7 +15,7 @@ export default {
     port: 80,
   },
   head: {
-    titleTemplate: 'kscpos',
+    titleTemplate: 'Point of Sale - KSC',
     title: '',
     meta: [
       { charset: 'utf-8' },

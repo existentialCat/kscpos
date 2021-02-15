@@ -47,6 +47,9 @@ export const mutations = {
   SET_SERVICE(state, service) {
     state.service = service
   },
+  ADD_SERVICE(state, service) {
+    state.services.push(service)
+  },
   SET_CUSTOMER(state, customer) {
     state.customer = customer
   },
@@ -105,15 +108,35 @@ export const mutations = {
   CLEAR_CHOSEN_PRODUCTS(state) {
     state.chosenProducts = []
   },
-  ADD_CHOSEN_SERVICE(state, product) {
-    state.chosenServices.push(product)
+  ADD_CHOSEN_SERVICE(state, service) {
+    if (!state.chosenServices.includes(service)) {
+      service.incart = 1
+      state.chosenServices.push(service)
+    } else {
+      const index = state.chosenServices.indexOf(service)
+      state.chosenServices[index].incart =
+        state.chosenServices[index].incart + 1
+    }
   },
-  REMOVE_CHOSEN_SERVICE(state, product) {
-    const index = state.chosenService.indexOf(product)
-    if (index !== -1) state.chosenServices.splice(index, 1)
+  REMOVE_CHOSEN_SERVICE(state, service) {
+    const index = state.chosenServices.indexOf(service)
+    if (service.incart > 1) {
+      state.chosenServices[index].incart -= 1
+    } else if (service.incart === 1) {
+      return state.chosenServices.splice(index, 1)
+    }
   },
   CLEAR_CHOSEN_SERVICES(state) {
     state.chosenServices = []
+  },
+  ADD_NOTE_TO_ORDER(state, note) {
+    state.order.notes.push(note)
+  },
+  ADD_REPAIR_OPTION(state, repair) {
+    state.order.repairOptions.push(repair)
+  },
+  ADD_TRANSACTION_TO_ORDER(state, transaction) {
+    state.order.transaction = transaction
   },
 }
 export const getters = {
@@ -125,6 +148,11 @@ export const getters = {
   },
 }
 export const actions = {
+  createNote({ commit }, note) {
+    this.$axios.post(`/orders/${note.order}/note`, note).then((res) => {
+      commit('ADD_NOTE_TO_ORDER', res.data)
+    })
+  },
   addChosenProduct({ commit }, product) {
     commit('ADD_CHOSEN_PRODUCT', product)
   },
@@ -142,6 +170,20 @@ export const actions = {
   },
   clearChosenServices({ commit }) {
     commit('CLEAR_CHOSEN_SERVICES')
+  },
+  createRepairOption({ commit }, repair) {
+    this.$axios
+      .post(`/orders/${repair.order}/addrepair`, repair)
+      .then((res) => {
+        commit('ADD_REPAIR_OPTION', res.data)
+      })
+  },
+  createOrderTransaction({ commit }, transaction) {
+    this.$axios
+      .post(`/orders/${transaction.order}/approve`, transaction)
+      .then((res) => {
+        commit('ADD_TRANSACTION_TO_ORDER', transaction)
+      })
   },
   async fetchKeywords({ commit }) {
     await this.$axios.get('/api/keywords').then((res) => {
@@ -269,6 +311,11 @@ export const actions = {
         commit('SET_SERVICE', res.data)
       })
   },
+  async createService({ commit }, service) {
+    await this.$axios.post('/api/services', service).then((res) => {
+      commit('ADD_SERVICE', res.data)
+    })
+  },
   async fetchAllCustomers({ commit }) {
     return await this.$axios
       .get('/api/customers')
@@ -325,7 +372,6 @@ export const actions = {
       })
   },
   async createOrder({ commit }, order) {
-    console.log(order)
     return await this.$axios
       .post('/api/orders', order)
       .then((res) => {

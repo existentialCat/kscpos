@@ -1,7 +1,7 @@
 <template>
   <v-stepper v-model="step" vertical>
     <v-col>
-      <v-stepper-step :complete="step > 1" step="1" @click="step = 1">
+      <v-stepper-step :complete="step > 1" step="1">
         <slot name="step1title"></slot>
       </v-stepper-step>
       <v-stepper-items>

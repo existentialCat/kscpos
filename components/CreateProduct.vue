@@ -83,7 +83,7 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="createProduct"> Save </v-btn>
+        <v-btn color="primary" text @click="postProduct()"> Save </v-btn>
         <v-btn text @click="$emit('cancelAdd')"> Cancel </v-btn>
       </v-card-actions>
     </v-card>
@@ -125,10 +125,23 @@ export default {
     updateKeywords(selected) {
       this.prod.keywords = selected
     },
-    createProduct() {
-      this.$emit('postProd', this.prod)
+    postProduct() {
+      this.createProduct(this.prod).then(() => {
+        this.prod = {
+          name: '',
+          vendor: '',
+          keywords: [],
+          brand: '',
+          model: '',
+          sn: '',
+          cost: null,
+          price: null,
+          qty: null,
+        }
+        this.$emit('cancelAdd')
+      })
     },
-    ...mapActions(['fetchKeywords']),
+    ...mapActions(['fetchKeywords', 'createProduct']),
   },
 }
 </script>

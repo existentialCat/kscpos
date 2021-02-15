@@ -47,7 +47,7 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="createService"> Save </v-btn>
+        <v-btn color="primary" text @click="postService()"> Save </v-btn>
         <v-btn text @click="$emit('cancelAdd')"> Cancel </v-btn>
       </v-card-actions>
     </v-card>
@@ -84,10 +84,18 @@ export default {
     updateCategories(selected) {
       this.service.categories = selected
     },
-    createService() {
-      this.$emit('postService', this.service)
+    postService() {
+      this.createService(this.service).then(() => {
+        this.service = {
+          categories: [],
+          name: '',
+          cost: null,
+          price: null,
+        }
+        this.$emit('cancelAdd')
+      })
     },
-    ...mapActions(['fetchCategories']),
+    ...mapActions(['fetchCategories', 'createService']),
   },
 }
 </script>

@@ -4,7 +4,7 @@
     :items="products"
     :search="productSearch"
     :items-per-page="itemsperpage"
-    :headers="productheaders"
+    :headers="$route.path == '/products' ? productHeaders : productHeadersMin"
   >
     <template v-slot:top>
       <v-text-field
@@ -40,7 +40,14 @@
       <b>${{ item.price }}</b>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-btn text small @click="addChosenProduct(item)"> Add </v-btn>
+      <v-btn
+        v-if="$route.path == '/products'"
+        text
+        small
+        @click="$router.push(`/products/${item._id}`)"
+        >Open</v-btn
+      >
+      <v-btn v-else text small @click="addChosenProduct(item)"> Add </v-btn>
     </template>
     <template v-slot:no-results
       >Product not found.
@@ -96,7 +103,26 @@ export default {
     return {
       productSearch: '',
       addProduct: false,
-      productheaders: [
+      productHeadersMin: [
+        { text: 'Product', value: 'name' },
+        {
+          text: 'Keywords',
+          value: 'keywords',
+          filter: (value) => {
+            if (!this.filterKeywords.length) return true
+            if (!value.length) return false
+            const valKeywords = value.map((vk) => vk.name)
+            const keywords = this.filterKeywords.map((k) => k.name)
+            for (const i in valKeywords) {
+              if (keywords.includes(valKeywords[i])) return true
+            }
+          },
+          sortable: false,
+        },
+        { text: 'Price', value: 'price' },
+        { text: 'Action', value: 'actions', sortable: false },
+      ],
+      productHeaders: [
         { text: 'Product', value: 'name' },
         {
           text: 'Keywords',
@@ -122,9 +148,9 @@ export default {
   computed: {
     ...mapState(['products', 'keywords', 'chosenProducts']),
   },
-  mounted() {
-    this.clearChosenProducts()
+  created() {
     this.fetchProducts()
+    this.clearChosenProducts()
   },
   methods: {
     postProduct(prod) {

@@ -14,90 +14,7 @@
       >
     </v-row>
     <v-row>
-      <v-col
-        ><v-data-table
-          ref="prodtable"
-          :items="products"
-          :search="search"
-          :headers="headers"
-        >
-          <template v-slot:top>
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Search"
-              single-line
-              hide-details
-            ></v-text-field
-            ><v-row align="center" class="pa-4"
-              >Filter:
-              <v-chip
-                class="ma-1"
-                :color="!filterKeywords.length ? 'primary' : ''"
-                @click="filterKeywords = []"
-                >All</v-chip
-              ><v-chip
-                v-for="keyword in keywords"
-                :key="keyword._id"
-                class="ma-1"
-                :color="filterKeywords.includes(keyword) ? 'primary' : ''"
-                @click="addToFilter(keyword)"
-                >{{ keyword.name }}</v-chip
-              ></v-row
-            ></template
-          >
-          <template v-slot:item.keywords="{ item }">
-            <v-chip v-for="keyword in item.keywords" :key="keyword._id" small>
-              {{ keyword.name }}
-            </v-chip>
-          </template>
-          <template v-slot:item.price="{ item }">
-            <b>${{ item.price }}</b>
-          </template>
-          <template v-slot:item.actions="{ item }">
-            <v-btn text small @click="$router.push(`/products/${item._id}`)">
-              Open
-            </v-btn>
-          </template>
-          <template v-slot:no-results
-            >Product not found.
-            <v-dialog v-model="addProduct" persistent max-width="1000px">
-              <template v-slot:activator="{ on, attrs }"
-                ><v-btn
-                  small
-                  outlined
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="prodName = search"
-                  >Add as New</v-btn
-                ></template
-              >
-              <CreateProduct
-                :productname="search"
-                @postProd="postProduct"
-                @cancelAdd="addProduct = false"
-              ></CreateProduct> </v-dialog
-          ></template>
-          <template v-slot:no-data
-            >No inventory.
-            <v-dialog v-model="addProduct" persistent max-width="1000px">
-              <template v-slot:activator="{ on, attrs }"
-                ><v-btn
-                  small
-                  outlined
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="prodName = search"
-                  >Add as New</v-btn
-                ></template
-              >
-              <CreateProduct
-                :productname="search"
-                @postProd="postProduct"
-                @cancelAdd="addProduct = false"
-              ></CreateProduct> </v-dialog
-          ></template> </v-data-table
-      ></v-col>
+      <v-col><ProductSelect></ProductSelect></v-col>
     </v-row>
   </v-container>
 </template>
@@ -169,21 +86,6 @@ export default {
     return this.fetchProducts()
   },
   methods: {
-    postProduct(prod) {
-      const product = {
-        name: prod.name,
-        vendor: prod.vendor,
-        keywords: prod.keywords,
-        brand: prod.brand,
-        model: prod.model,
-        sn: prod.sn,
-        cost: prod.cost,
-        price: prod.price,
-        qty: prod.qty,
-      }
-      this.addProduct = false
-      this.createProduct(product)
-    },
     addToFilter(k) {
       if (this.filterKeywords.includes(k)) {
         const index = this.filterKeywords.indexOf(k)
@@ -191,7 +93,7 @@ export default {
       }
       this.filterKeywords.push(k)
     },
-    ...mapActions(['fetchProducts', 'fetchKeywords', 'createProduct']),
+    ...mapActions(['fetchProducts', 'fetchKeywords']),
   },
 }
 </script>
