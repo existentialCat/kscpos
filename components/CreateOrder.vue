@@ -112,7 +112,14 @@
                             ><v-select
                               v-model="sysType"
                               label="Device Type"
-                              :items="['Laptop', 'Tower']"
+                              :items="[
+                                'Laptop',
+                                'Desktop',
+                                'Game Console',
+                                'Phone',
+                                'Tablet',
+                                'Other',
+                              ]"
                             ></v-select>
                           </v-col>
                           <v-col>
@@ -139,14 +146,14 @@
                           ><v-btn v-if="systemLoaded">Add Another System</v-btn>
                           <v-col cols="12"> <v-divider></v-divider> </v-col
                           ><v-col cols="6">
-                            <v-text-field
+                            <v-combobox
                               v-model="accessory"
                               label="Items Left with us"
                               :items="['A/C Adapter', 'Bag']"
                               @keyup.enter="
                                 itemsLeft.push(accessory), (accessory = '')
                               "
-                            ></v-text-field
+                            ></v-combobox
                           ></v-col>
                           <v-col v-for="(item, index) in itemsLeft" :key="index"
                             >{{ item
@@ -233,7 +240,7 @@ export default {
     },
     processCheckin() {
       console.log('processing checkin...')
-      if (this.accessory.length > 0) {
+      if (this.accessory && this.accessory.length >= 1) {
         this.itemsLeft.push(this.accessory)
       }
       if (this.systemLoaded) {

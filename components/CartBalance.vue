@@ -5,7 +5,12 @@
         <v-card>
           <v-card-title>Cart</v-card-title>
           <v-card-text>
-            <v-row v-for="product in chosenProducts" :key="product._id">
+            <v-row
+              v-for="product in !loadtransaction
+                ? chosenProducts
+                : loadtransaction.products"
+              :key="product._id"
+            >
               <v-col v-if="product.incart" cols="2">
                 x{{ product.incart }}
               </v-col>
@@ -13,7 +18,7 @@
                 {{ product.name }}
               </v-col>
               <v-col> ${{ product.price }} </v-col>
-              <v-col>
+              <v-col v-if="!loadtransaction">
                 <v-btn
                   color="error"
                   x-small
@@ -22,7 +27,12 @@
                 >
               </v-col>
             </v-row>
-            <v-row v-for="service in chosenServices" :key="service._id">
+            <v-row
+              v-for="service in !loadtransaction
+                ? chosenServices
+                : loadtransaction.services"
+              :key="service._id"
+            >
               <v-col v-if="service.incart" cols="2">
                 x{{ service.incart }}
               </v-col>
@@ -30,7 +40,7 @@
                 {{ service.name }}
               </v-col>
               <v-col> ${{ service.price }} </v-col>
-              <v-col>
+              <v-col v-if="!loadtransaction">
                 <v-btn
                   color="error"
                   x-small
@@ -49,6 +59,9 @@
           <v-card-text v-if="chosenProducts"
             ><h4>Subtotal: ${{ subtotalDue }}</h4>
             <h4>Sales Tax: ${{ taxesDue }}</h4>
+            <h4 v-if="loadtransaction && loadtransaction.paid">
+              Amount Paid: ${{ loadtransaction.paid }}
+            </h4>
             <h2>Balance Due: ${{ balanceDue }}</h2></v-card-text
           ></v-card
         >
@@ -57,9 +70,16 @@
     <v-row v-if="!noaction">
       <v-col>
         <CollectPayment
-          :products="chosenProducts"
-          :services="chosenServices"
+          :products="
+            !loadtransaction ? chosenProducts : loadtransaction.products
+          "
+          :services="
+            !loadtransaction ? chosenServices : loadtransaction.services
+          "
           :balancedue="balanceDue"
+          :loadtransaction="loadtransaction"
+          :order="order"
+          :stage="stage"
         >
         </CollectPayment>
       </v-col>
@@ -76,10 +96,28 @@ export default {
       type: Boolean,
       default: false,
     },
+    loadtransaction: {
+      type: Object,
+      default: null,
+    },
+    order: {
+      type: Object,
+      default: null,
+    },
+    stage: {
+      type: String,
+      default: null,
+    },
   },
   computed: {
     chosenItems() {
-      return this.chosenProducts.concat(this.chosenServices)
+      if (!this.loadtransaction) {
+        return this.chosenProducts.concat(this.chosenServices)
+      } else {
+        return this.loadtransaction.products.concat(
+          this.loadtransaction.services,
+        )
+      }
     },
     subtotalDue() {
       if (this.chosenItems) {
@@ -99,7 +137,7 @@ export default {
       } else return null
     },
     taxesDue() {
-      if (this.chosenProducts && this.chosenProducts.length) {
+      if (this.chosenItems && this.chosenItems.length) {
         const taxes = this.chosenItems.map((p) => {
           if (p.taxable) {
             if (p.incart > 0) {
@@ -120,9 +158,13 @@ export default {
     balanceDue() {
       const formatSubTotal = (this.subtotalDue * 100) / 100
       const formatTaxes = (this.taxesDue * 100) / 100
-      const sum = formatSubTotal + formatTaxes
-      const formatSum = sum.toFixed(2)
-      return formatSum
+      const subtotalAndTax = formatSubTotal + formatTaxes
+      const formatSum = subtotalAndTax.toFixed(2)
+      if (this.loadtransaction && this.loadtransaction.paid) {
+        const paidDifference = subtotalAndTax - this.loadtransaction.paid
+        const formatSum = paidDifference.toFixed(2)
+        return formatSum
+      } else return formatSum
     },
     ...mapState(['taxrate', 'chosenProducts', 'chosenServices']),
   },

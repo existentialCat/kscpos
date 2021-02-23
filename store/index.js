@@ -148,6 +148,18 @@ export const getters = {
   },
 }
 export const actions = {
+  closeWorkOrder({ commit }, id) {
+    this.$axios.post(`/orders/${id}/close`).then((res) => {
+      console.log(res.data)
+    })
+  },
+  payOnWorkOrder({ commit }, transaction) {
+    this.$axios
+      .post(`/orders/${transaction.order}/pay`, transaction)
+      .then((res) => {
+        return res
+      })
+  },
   createNote({ commit }, note) {
     this.$axios.post(`/orders/${note.order}/note`, note).then((res) => {
       commit('ADD_NOTE_TO_ORDER', res.data)

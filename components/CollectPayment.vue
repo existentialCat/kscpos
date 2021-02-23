@@ -3,9 +3,10 @@
     <v-dialog v-model="dialog" persistent max-width="1000px">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
+          v-if="balancedue > 0 || $route.path == '/quicksale'"
           slot="collect"
           color="primary"
-          :disabled="balancedue === '0.00'"
+          :disabled="chosenItems.length == 0"
           v-bind="attrs"
           v-on="on"
           @click="startCollect"
@@ -91,6 +92,37 @@
         >
       </v-card>
     </v-dialog>
+    <v-dialog v-model="pickupDialog" persistent max-width="1000px">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-if="balancedue <= 0 && loadtransaction && !order.completed"
+          color="primary"
+          :disabled="chosenItems.length == 0"
+          v-bind="attrs"
+          v-on="on"
+          @click="pickupDialog = true"
+          >Mark as Complete</v-btn
+        >
+      </template>
+      <v-card>
+        <v-card-title>Confirm Order Compete</v-card-title>
+        <v-card-text>
+          Confirm items left have been returned to customer
+          <v-row>
+            <v-col
+              v-for="(item, index) in order.itemsLeft"
+              :key="index"
+              cols="12"
+              ><b>{{ item }}</b></v-col
+            >
+          </v-row>
+        </v-card-text>
+        <v-card-actions
+          ><v-btn @click="markAsPickedUp">Close Work Order</v-btn
+          ><v-btn @click="pickupDialog = false">Cancel</v-btn></v-card-actions
+        >
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -110,9 +142,22 @@ export default {
       type: [Number, String],
       required: true,
     },
+    loadtransaction: {
+      type: Object,
+      default: null,
+    },
+    order: {
+      type: Object,
+      default: null,
+    },
+    stage: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
+      jobFinished: false,
       partialpay: false,
       fromCustomer: null,
       paymentType: null,
@@ -120,23 +165,39 @@ export default {
       change: null,
       paidinfull: false,
       transactionToPost: {},
+      pickupDialog: false,
     }
   },
   computed: {
+    chosenItems() {
+      return this.products.concat(this.services)
+    },
     transactionContext() {
       if (this.$route.fullPath === '/quicksale') {
         return 'quick-sale'
-      } else return null
+      } else return 'work-order'
     },
   },
   methods: {
+    markAsPickedUp() {
+      if (this.balancedue <= 0) {
+        this.closeWorkOrder(this.loadtransaction.order).then((res) => {
+          this.$router.push('/orders/')
+          console.log('closing')
+        })
+        this.paiddialog = false
+      } else console.log('ORDER HASNT BEEN PAID FOR')
+    },
     setExactChange() {
       this.fromCustomer = this.balancedue
     },
     startCollect() {
-      setTimeout(() => {
-        this.$refs.receiveinput.focus()
-      }, 100)
+      if (!this.jobFinished) this.jobFinished = true
+      if (this.jobFinished) {
+        return setTimeout(() => {
+          this.$refs.receiveinput.focus()
+        }, 100)
+      }
     },
     putMoneyDown() {
       this.partialpay = true
@@ -145,7 +206,6 @@ export default {
       )
     },
     processPay() {
-      console.log(this.products)
       const sufficientPay =
         this.fromCustomer >= parseFloat(this.balancedue).toFixed(2)
       const difference = parseFloat(this.fromCustomer - this.balancedue)
@@ -156,19 +216,30 @@ export default {
         this.transactionToPost.products = this.products
         this.transactionToPost.services = this.services
         this.transactionToPost.paid = this.fromCustomer
-        console.log(this.transactionToPost)
       } else {
         this.putMoneyDown()
         console.log('unpaid, money put down')
       }
     },
     async saveTransaction() {
-      await this.createTransaction(this.transactionToPost).then((res) => {
-        // console.log(res)
-        this.$router.push(`/transactions/${res._id}`)
-      })
+      if (this.transactionToPost) {
+        if (!this.order) {
+          await this.createTransaction(this.transactionToPost).then((res) => {
+            console.log(res)
+            this.$router.push(`/transactions/${res._id}`)
+          })
+        } else {
+          const transaction = {
+            order: this.loadtransaction.order,
+            paid: this.fromCustomer,
+          }
+          await this.payOnWorkOrder(transaction).then((res) => {
+            console.log(res)
+          })
+        }
+      }
     },
-    ...mapActions(['createTransaction']),
+    ...mapActions(['createTransaction', 'closeWorkOrder', 'payOnWorkOrder']),
   },
 }
 </script>

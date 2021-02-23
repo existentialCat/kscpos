@@ -1,6 +1,34 @@
 <template>
   <v-container>
     <v-row>
+      <v-col v-if="ordersStage" cols="12"
+        ><v-card
+          :color="
+            ordersStage == 'completed' || ordersStage == 'order-paid-for'
+              ? 'primary'
+              : ''
+          "
+          dark
+          ><v-card-title
+            >{{
+              ordersStage == 'completed'
+                ? 'Order complete. No changes can be made.'
+                : 'Order in Progress'
+            }}{{ ordersStage == 'needs-approval' ? ' - Needs Approval' : ''
+            }}{{
+              ordersStage == 'work-approved' && readyForPickup
+                ? ' - Ready for pickup'
+                : ordersStage == 'work-approved'
+                ? ' - Repair Approved Call When Finished'
+                : ''
+            }}{{
+              ordersStage == 'order-paid-for'
+                ? ' - Paid, Waiting for Pickup'
+                : ''
+            }}</v-card-title
+          ></v-card
+        ></v-col
+      >
       <v-col cols="12" :lg="order.transaction ? 8 : 12">
         <v-card
           ><v-card-title
@@ -67,7 +95,7 @@
               </v-dialog>
               <v-col
                 v-for="note in order.notes"
-                :key="note.id"
+                :key="note._id"
                 cols="12"
                 md="6"
                 lg="4"
@@ -102,20 +130,20 @@
                             style="cursor: pointer"
                             @click="step = 1"
                           >
-                            Products
+                            Services
                           </h2>
                           <div slot="step1">
-                            <ProductSelect :itemsperpage="3"></ProductSelect>
+                            <ServiceSelect :itemsperpage="3"></ServiceSelect>
                           </div>
                           <h2
                             slot="step2title"
                             style="cursor: pointer"
                             @click="step = 2"
                           >
-                            Services
+                            Products
                           </h2>
                           <div slot="step2">
-                            <ServiceSelect :itemsperpage="3"></ServiceSelect>
+                            <ProductSelect :itemsperpage="3"></ProductSelect>
                           </div>
                         </TransactionBuilder>
                       </v-col>
@@ -131,8 +159,14 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-col v-for="estimate in order.repairOptions" :key="estimate.id">
-                <EstimateObj :estimate="estimate"></EstimateObj>
+              <v-col
+                v-for="(repairoption, index) in order.repairOptions"
+                :key="index"
+              >
+                <RepairOption
+                  :repairoption="repairoption"
+                  :chosen="compareRepairOptionToTransaction(repairoption)"
+                ></RepairOption>
               </v-col>
             </v-row>
             <v-divider></v-divider>
@@ -165,23 +199,38 @@
                       ]"
                     ></v-select>
                     <v-row v-if="contactReason === 'Get Approval'">
-                      <!-- <v-col
-                        ><v-card @click="chosenRepair = feeDiag"
-                          ><v-card-title
-                            >No Repair Diag - $20</v-card-title
-                          ></v-card
-                        ></v-col
-                      >
                       <v-col
-                        ><v-card @click="chosenRepair = freeDiag"
-                          ><v-card-title
-                            >Free Diag or Recycle - $0</v-card-title
-                          ></v-card
-                        ></v-col
-                      > -->
-                      <!-- <v-col
-                        v-for="repairOption in order.repairOptions"
-                      ></v-col> -->
+                        v-for="(repairOption, indexA) in order.repairOptions"
+                        :key="indexA"
+                      >
+                        <v-card>
+                          <v-card-text
+                            v-for="(repair,
+                            indexB) in repairOption.services.concat(
+                              repairOption.products,
+                            )"
+                            :key="indexB"
+                            >{{
+                              `${
+                                repair.incart > 1 ? repair.incart + 'x' : ''
+                              } ${repair.name} $${repair.price}`
+                            }}</v-card-text
+                          >
+                          <v-card-text>
+                            <v-btn
+                              :color="
+                                chosenRepair === repairOption ? 'primary' : ''
+                              "
+                              @click="chooseRepair(repairOption)"
+                              >{{
+                                chosenRepair === repairOption
+                                  ? `Selected $${getBalance(repairOption)}`
+                                  : `Choose $${getBalance(repairOption)}`
+                              }}</v-btn
+                            >
+                          </v-card-text>
+                        </v-card>
+                      </v-col>
                     </v-row>
                   </v-card-text>
                   <v-card-actions>
@@ -194,7 +243,28 @@
                     ></v-text-field>
                     <v-divider vertical></v-divider>
                     <v-btn text @click="contactDialog = false"> Close </v-btn>
-                    <v-btn text @click="postTransaction"> Add </v-btn>
+                    <v-btn
+                      v-if="contactReason == 'Get Approval'"
+                      text
+                      @click="postTransaction()"
+                    >
+                      Save
+                    </v-btn>
+                    <v-btn
+                      v-if="contactReason == 'Gather more information'"
+                      text
+                      :disabled="contactText.length < 2"
+                      @click="addNote(contactText)"
+                    >
+                      Save
+                    </v-btn>
+                    <v-btn
+                      v-if="contactReason == 'Ready for pickup'"
+                      text
+                      @click="addNote('called for pickup')"
+                    >
+                      Save
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -204,8 +274,13 @@
             </v-row> </v-card-text
           ><v-card-actions> </v-card-actions
         ></v-card> </v-col
-      ><v-col v-if="order.transaction">show transaction here</v-col></v-row
-    ></v-container
+      ><v-col v-if="order.transaction"
+        ><CartBalance
+          :stage="ordersStage"
+          :loadtransaction="order.transaction"
+          :order="order"
+        ></CartBalance></v-col></v-row
+    >{{ ordersStage }}</v-container
   >
 </template>
 
@@ -231,11 +306,29 @@ export default {
     }
   },
   computed: {
+    ordersStage() {
+      if (this.order.completed) return 'completed'
+      if (this.order.transaction && this.order.transaction.balanceDue < 0)
+        return 'order-paid-for'
+      if (this.order.transaction) return 'work-approved'
+      if (this.order.repairOptions.length) return 'needs-approval'
+      else return 'pending'
+    },
+    readyForPickup() {
+      if (this.order.notes) {
+        const noteTexts = this.order.notes.map((n) => n.text)
+        if (noteTexts.includes('called for pickup')) return true
+      } else return false
+      return false
+    },
+    orderCompleted() {
+      return this.order.completed
+    },
     fullView() {
       if (this.$route.params.id === this.order._id) return true
       return false
     },
-    ...mapState(['order', 'chosenProducts', 'chosenServices']),
+    ...mapState(['taxrate', 'order', 'chosenProducts', 'chosenServices']),
   },
   methods: {
     postTransaction() {
@@ -243,9 +336,16 @@ export default {
         order: this.$route.params.id,
         products: this.chosenRepair.products,
         services: this.chosenRepair.services,
-        context: 'system-check-in',
+        context: 'work-order',
       }
       this.createOrderTransaction(transaction)
+      this.contactDialog = false
+      this.contactReason = ''
+      this.contactText = ''
+      this.chosenRepair = {}
+      setTimeout(() => {
+        this.$forceUpdate()
+      }, 100)
     },
     postRepair() {
       const repairOption = {
@@ -258,14 +358,61 @@ export default {
       this.clearChosenServices()
       this.repairDialog = false
     },
-    addNote() {
+    addNote(customnote) {
       const note = {
-        text: this.noteText,
+        text: this.noteText || customnote,
         order: this.order._id,
       }
       this.createNote(note)
       this.noteText = ''
       this.noteDialog = false
+      if (customnote) this.contactDialog = false
+    },
+    getBalance(repair) {
+      const productServices = repair.products.concat(repair.services)
+      const subtotal = productServices.map((i) => {
+        const multiplied = i.price * i.incart
+        const format = multiplied.toFixed(2)
+        if (i.incart > 0) return (format * 100) / 100
+        else {
+          const format = i.price.toFixed(2)
+          return (format * 100) / 100
+        }
+      })
+      if (subtotal.length > 0) {
+        const subtotalsum = subtotal.reduce((a, b) => a + b)
+        const taxes = productServices.map((ps) => {
+          if (ps.taxable) {
+            const subtotal = ps.price * ps.incart
+            const calculateTax = subtotal * (this.taxrate - 1)
+            const format = calculateTax.toFixed(2)
+            return (format * 100) / 100
+          } else return ps.price * ps.incart
+        })
+        const taxessum = taxes.reduce((a, b) => a + b)
+        return subtotalsum + taxessum
+      } else return 0
+    },
+    chooseRepair(repair) {
+      this.chosenRepair = repair
+    },
+    compareRepairOptionToTransaction(repair) {
+      if (repair && this.order.transaction) {
+        const matchNumOfProducts =
+          repair.products.length === this.order.transaction.products.length
+        const matchNumOfServices =
+          repair.services.length === this.order.transaction.services.length
+        if (!matchNumOfProducts || !matchNumOfServices) return false
+        else if (this.order.transaction.products.length) {
+          const firstProductsMatch =
+            repair.products[0]._id === this.order.transaction.products[0]._id
+          return firstProductsMatch
+        } else {
+          const firstServicesMatch =
+            repair.services[0]._id === this.order.transaction.services[0]._id
+          return firstServicesMatch
+        }
+      } else return false
     },
     ...mapActions([
       'createNote',

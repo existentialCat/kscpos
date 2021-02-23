@@ -1,8 +1,36 @@
 <template>
   <v-container>
-    <h2>Orders</h2>
-    <CreateOrder></CreateOrder>
-    <v-data-table :items="orders" :headers="headers">
+    <v-row>
+      <h2>Work Bench Orders</h2>
+      <v-spacer /><CreateOrder></CreateOrder
+    ></v-row>
+    <v-data-table :items="openorders" :headers="headers">
+      <template v-slot:item.created="{ item }">
+        <span>{{ new Date(item.created).toLocaleString() }}</span>
+      </template>
+      <template v-slot:item.completed="{ item }">
+        <span>{{
+          item.completed ? new Date(item.completed).toLocaleString() : 'False'
+        }}</span>
+      </template>
+      <template v-slot:item.systems="{ item }">
+        <span>{{ `${systemsString(item.systems)}` }}</span>
+      </template>
+      <template v-slot:item.transaction="{ item }">
+        <a
+          v-if="item.transaction"
+          :href="'/transactions/' + item.transaction._id"
+          >{{ `${transactionString(item.transaction)}` }}</a
+        >
+      </template>
+      <template v-slot:item._id="{ item }">
+        <v-btn color="primary" text small nuxt :to="'/orders/' + item._id"
+          >Open</v-btn
+        >
+      </template>
+    </v-data-table>
+    <h2>Completed</h2>
+    <v-data-table :items="completedorders" :headers="headers">
       <template v-slot:item.created="{ item }">
         <span>{{ new Date(item.created).toLocaleString() }}</span>
       </template>
@@ -51,6 +79,16 @@ export default {
     }
   },
   computed: {
+    openorders() {
+      return this.orders.filter((o) => {
+        return !o.completed
+      })
+    },
+    completedorders() {
+      return this.orders.filter((o) => {
+        return o.completed
+      })
+    },
     ...mapState(['orders']),
   },
   methods: {
