@@ -108,7 +108,7 @@
         <v-card-title>Confirm Order Compete</v-card-title>
         <v-card-text>
           Confirm items left have been returned to customer
-          <v-row>
+          <v-row v-if="order">
             <v-col
               v-for="(item, index) in order.itemsLeft"
               :key="index"
@@ -235,6 +235,7 @@ export default {
           }
           await this.payOnWorkOrder(transaction).then((res) => {
             console.log(res)
+            this.$router.go(`/orders/${transaction.order}`)
           })
         }
       }
