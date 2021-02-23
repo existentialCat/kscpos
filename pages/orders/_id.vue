@@ -280,7 +280,7 @@
           :loadtransaction="order.transaction"
           :order="order"
         ></CartBalance></v-col></v-row
-    >{{ ordersStage }}</v-container
+    >{{ ordersStage }}{{ order.transaction }}</v-container
   >
 </template>
 

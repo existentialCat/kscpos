@@ -233,9 +233,10 @@ export default {
             order: this.loadtransaction.order,
             paid: this.fromCustomer,
           }
+          console.log(this.loadtransaction.order)
           await this.payOnWorkOrder(transaction).then((res) => {
             console.log(res)
-            this.$router.go(`/orders/${transaction.order}`)
+            this.$router.go(`/orders/${this.loadtransaction.order}`)
           })
         }
       }
