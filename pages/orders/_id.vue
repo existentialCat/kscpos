@@ -331,6 +331,7 @@ export default {
     ...mapState(['taxrate', 'order', 'chosenProducts', 'chosenServices']),
   },
   mounted() {
+    console.log('load in order')
     this.fetchOrder(this.$route.params.id).then(() => {
       console.log(this.order._id)
     })
