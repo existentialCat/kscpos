@@ -330,6 +330,9 @@ export default {
     },
     ...mapState(['taxrate', 'order', 'chosenProducts', 'chosenServices']),
   },
+  created() {
+    this.fetchOrder(this.$route.params.id)
+  },
   methods: {
     postTransaction() {
       const transaction = {
@@ -415,6 +418,7 @@ export default {
       } else return false
     },
     ...mapActions([
+      'fetchOrder',
       'createNote',
       'createRepairOption',
       'clearChosenProducts',

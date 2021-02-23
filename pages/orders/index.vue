@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default {
   // middleware: 'auth',
   components: {},
@@ -91,6 +91,9 @@ export default {
     },
     ...mapState(['orders']),
   },
+  created() {
+    this.fetchAllOrders()
+  },
   methods: {
     systemsString(systems) {
       return systems.map((s) => s.brand + ' ' + s.model)
@@ -102,6 +105,7 @@ export default {
         return 'Balance Due: $' + transaction.balanceDue
       } else return 'Completed'
     },
+    ...mapActions(['fetchAllOrders']),
   },
 }
 </script>

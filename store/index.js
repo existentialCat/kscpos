@@ -226,6 +226,7 @@ export const actions = {
       .get('/api/orders')
       .then((res) => {
         commit('SET_ORDERS', res.data)
+        console.log(res.data.length)
         return res.data
       })
       .catch((error) => {
