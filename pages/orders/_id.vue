@@ -330,8 +330,10 @@ export default {
     },
     ...mapState(['taxrate', 'order', 'chosenProducts', 'chosenServices']),
   },
-  created() {
-    this.fetchOrder(this.$route.params.id)
+  mounted() {
+    this.fetchOrder(this.$route.params.id).then(() => {
+      console.log(this.order._id)
+    })
   },
   methods: {
     postTransaction() {
