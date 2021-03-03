@@ -13,6 +13,7 @@
                 :value="customername"
                 outlined
                 label="Name"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -21,6 +22,7 @@
                 type="phone"
                 outlined
                 label="Phone"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
           </v-row>

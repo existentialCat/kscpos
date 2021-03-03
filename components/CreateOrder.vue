@@ -43,6 +43,7 @@
                               label="Search"
                               single-line
                               hide-details
+                              autocomplete="new-password"
                             ></v-text-field
                           ></template>
                           <template v-slot:item.actions="{ item }">
@@ -126,22 +127,29 @@
                             <v-text-field
                               v-model="brand"
                               label="Brand"
+                              autocomplete="new-password"
                             ></v-text-field
                           ></v-col>
                           <v-col>
                             <v-text-field
                               v-model="model"
                               label="Model"
+                              autocomplete="new-password"
                             ></v-text-field
                           ></v-col>
                           <v-col>
-                            <v-text-field v-model="sn" label="SN"></v-text-field
+                            <v-text-field
+                              v-model="sn"
+                              label="SN"
+                              autocomplete="new-password"
+                            ></v-text-field
                           ></v-col>
                           <v-col cols="12">
                             <v-textarea
                               v-model="symptoms"
                               outlined
                               label="Symptoms"
+                              autocomplete="new-password"
                             ></v-textarea></v-col
                           ><v-btn v-if="systemLoaded">Add Another System</v-btn>
                           <v-col cols="12"> <v-divider></v-divider> </v-col

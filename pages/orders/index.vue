@@ -4,33 +4,43 @@
       <h2>Work Bench Orders</h2>
       <v-spacer /><CreateOrder></CreateOrder
     ></v-row>
-    <v-data-table :items="openorders" :headers="headers">
-      <template v-slot:item.created="{ item }">
-        <span>{{ new Date(item.created).toLocaleString() }}</span>
-      </template>
-      <template v-slot:item.completed="{ item }">
-        <span>{{
-          item.completed ? new Date(item.completed).toLocaleString() : 'False'
-        }}</span>
-      </template>
-      <template v-slot:item.systems="{ item }">
-        <span>{{ `${systemsString(item.systems)}` }}</span>
-      </template>
-      <template v-slot:item.transaction="{ item }">
-        <a
-          v-if="item.transaction"
-          :href="'/transactions/' + item.transaction._id"
-          >{{ `${transactionString(item.transaction)}` }}</a
+    <v-card color="blue" class="my-5">
+      <v-card-text>
+        <v-data-table
+          :items="openorders"
+          :headers="headers"
+          hide-default-footer
         >
-      </template>
-      <template v-slot:item._id="{ item }">
-        <v-btn color="primary" text small nuxt :to="'/orders/' + item._id"
-          >Open</v-btn
-        >
-      </template>
-    </v-data-table>
+          <template v-slot:item.created="{ item }">
+            <span>{{ new Date(item.created).toLocaleString() }}</span>
+          </template>
+          <template v-slot:item.completed="{ item }">
+            <span>{{
+              item.completed
+                ? new Date(item.completed).toLocaleString()
+                : 'False'
+            }}</span>
+          </template>
+          <template v-slot:item.systems="{ item }">
+            <span>{{ `${systemsString(item.systems)}` }}</span>
+          </template>
+          <template v-slot:item.transaction="{ item }">
+            <a
+              v-if="item.transaction"
+              :href="'/transactions/' + item.transaction._id"
+              >{{ `${transactionString(item.transaction)}` }}</a
+            >
+          </template>
+          <template v-slot:item._id="{ item }">
+            <v-btn color="primary" text small nuxt :to="'/orders/' + item._id"
+              >Open</v-btn
+            >
+          </template>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
     <h2>Completed</h2>
-    <v-data-table :items="completedorders" :headers="headers">
+    <v-data-table :items="completedorders" :headers="headers" dense>
       <template v-slot:item.created="{ item }">
         <span>{{ new Date(item.created).toLocaleString() }}</span>
       </template>
@@ -85,9 +95,11 @@ export default {
       })
     },
     completedorders() {
-      return this.orders.filter((o) => {
+      const completedOrders = this.orders.filter((o) => {
         return o.completed
       })
+      completedOrders.reverse()
+      return completedOrders
     },
     ...mapState(['orders']),
   },

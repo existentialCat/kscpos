@@ -11,6 +11,7 @@
                 :value="servicename"
                 outlined
                 label="Name"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -31,6 +32,7 @@
                 type="number"
                 outlined
                 label="cost"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -39,6 +41,7 @@
                 type="number"
                 outlined
                 label="price"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
           </v-row>

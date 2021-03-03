@@ -28,12 +28,15 @@
             >
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  ref="receiveinput"
-                  v-model="fromCustomer"
-                  outlined
-                  label="Amount Received"
-                ></v-text-field>
+                <v-form autocomplete="off">
+                  <v-text-field
+                    ref="receiveinput"
+                    v-model="fromCustomer"
+                    outlined
+                    label="Amount Received"
+                    autocomplete="new-password"
+                  ></v-text-field>
+                </v-form>
               </v-col>
             </v-row>
           </v-container>

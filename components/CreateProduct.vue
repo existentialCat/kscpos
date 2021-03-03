@@ -11,6 +11,7 @@
                 :value="productname"
                 outlined
                 label="Name"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -30,6 +31,7 @@
                 v-model="prod.brand"
                 outlined
                 label="Brand"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -37,6 +39,7 @@
                 v-model="prod.model"
                 outlined
                 label="Model"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -44,6 +47,7 @@
                 v-model="prod.sn"
                 outlined
                 label="SN"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -51,6 +55,7 @@
                 v-model="prod.vendor"
                 outlined
                 label="Vendor"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -59,6 +64,7 @@
                 type="number"
                 outlined
                 label="cost"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -67,6 +73,7 @@
                 type="number"
                 outlined
                 label="price"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="4" lg="3">
@@ -75,6 +82,7 @@
                 type="number"
                 outlined
                 label="qty"
+                autocomplete="new-password"
               ></v-text-field>
             </v-col>
           </v-row>

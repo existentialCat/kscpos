@@ -205,11 +205,12 @@
                       >
                         <v-card>
                           <v-card-text
-                            v-for="(repair,
-                            indexB) in repairOption.services.concat(
+                            v-for="(
+                              repair, index
+                            ) in repairOption.services.concat(
                               repairOption.products,
                             )"
-                            :key="indexB"
+                            :key="index"
                             >{{
                               `${
                                 repair.incart > 1 ? repair.incart + 'x' : ''
@@ -280,8 +281,7 @@
           :loadtransaction="order.transaction"
           :order="order"
         ></CartBalance></v-col></v-row
-    >{{ ordersStage }}{{ order.transaction }}</v-container
-  >
+  ></v-container>
 </template>
 
 <script>
