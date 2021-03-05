@@ -19,6 +19,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "nuxt": "^2.14.6",
+    "vue-html-to-paper": "^1.3.1",
     "vue-timers": "^2.0.4",
     "vuetify": "^2.3.15"
   },

@@ -262,12 +262,13 @@ export default {
       }
       const order = {
         customerId: this.chosenCustomer._id,
-        context: 'system-check-in',
+        context: 'work-order',
         agreeToTerms: true,
         itemsLeft: this.itemsLeft,
         systems: this.systems,
         symptoms: this.symptoms,
       }
+      console.log(order)
       this.createOrder(order).then((res) => {
         this.$router.push(`/orders/${res._id}`)
       })

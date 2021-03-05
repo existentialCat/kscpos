@@ -79,7 +79,6 @@
           :balancedue="balanceDue"
           :loadtransaction="loadtransaction"
           :order="order"
-          :stage="stage"
         >
         </CollectPayment>
       </v-col>
@@ -102,10 +101,6 @@ export default {
     },
     order: {
       type: Object,
-      default: null,
-    },
-    stage: {
-      type: String,
       default: null,
     },
   },
@@ -132,7 +127,8 @@ export default {
         })
         if (subtotal.length > 0) {
           const sum = subtotal.reduce((a, b) => a + b)
-          return sum
+          const format = sum.toFixed(2)
+          return (format * 100) / 100
         } else return 0
       } else return null
     },

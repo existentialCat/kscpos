@@ -1,61 +1,69 @@
 <template>
-  <v-data-table
-    :items="customers"
-    :search="customerSearch"
-    :headers="customerheaders"
-    :items-per-page="itemsperpage"
-  >
-    <template v-slot:top>
-      <v-text-field
-        v-model="customerSearch"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field
-    ></template>
-    <template v-slot:item.actions="{ item }">
-      <v-btn text small @click="chooseCustomer(item)"> Choose </v-btn>
-    </template>
-    <template v-slot:no-results
-      >Customer not found.
-      <v-dialog v-model="addCustomer" persistent max-width="1000px">
-        <template v-slot:activator="{ on, attrs }"
-          ><v-btn
-            small
-            outlined
-            v-bind="attrs"
-            v-on="on"
-            @click="addCustomer = true"
-            >Add as New</v-btn
-          ></template
-        >
-        <CreateCustomer
-          :customername="customerSearch"
-          @postCustomer="postCustomer"
-          @cancelAdd="addCustomer = false"
-        ></CreateCustomer> </v-dialog
-    ></template>
-    <template v-slot:no-data
-      >No Customers yet.
-      <v-dialog v-model="addCustomer" persistent max-width="1000px">
-        <template v-slot:activator="{ on, attrs }"
-          ><v-btn
-            small
-            outlined
-            v-bind="attrs"
-            v-on="on"
-            @click="custName = customerSearch"
-            >Add as New</v-btn
-          ></template
-        >
-        <CreateCustomer
-          :customername="customerSearch"
-          @postCustomer="postCustomer"
-          @cancelAdd="addCustomer = false"
-        ></CreateCustomer> </v-dialog
-    ></template>
-  </v-data-table>
+  <div>
+    <v-data-table
+      :items="customers"
+      :search="customerSearch"
+      :headers="customerheaders"
+      :items-per-page="itemsperpage"
+    >
+      <template v-slot:top>
+        <v-text-field
+          v-model="customerSearch"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field
+      ></template>
+      <template v-slot:item.actions="{ item }">
+        <v-btn text small @click="chooseCustomer(item)"> Choose </v-btn>
+      </template>
+      <template v-slot:no-results
+        >Customer not found.
+        <v-dialog v-model="addCustomer" persistent max-width="1000px">
+          <template v-slot:activator="{ on, attrs }"
+            ><v-btn
+              small
+              outlined
+              v-bind="attrs"
+              v-on="on"
+              @click="addCustomer = true"
+              >Add as New</v-btn
+            ></template
+          >
+          <CreateCustomer
+            :customername="customerSearch"
+            @postCustomer="postCustomer"
+            @cancelAdd="addCustomer = false"
+          ></CreateCustomer> </v-dialog
+      ></template>
+      <template v-slot:no-data
+        >No Customers yet.
+        <v-dialog v-model="addCustomer" persistent max-width="1000px">
+          <template v-slot:activator="{ on, attrs }"
+            ><v-btn
+              small
+              outlined
+              v-bind="attrs"
+              v-on="on"
+              @click="custName = customerSearch"
+              >Add as New</v-btn
+            ></template
+          >
+          <CreateCustomer
+            :customername="customerSearch"
+            @postCustomer="postCustomer"
+            @cancelAdd="addCustomer = false"
+          ></CreateCustomer> </v-dialog
+      ></template>
+    </v-data-table>
+    <v-container>
+      <v-row>
+        <v-spacer />
+        <v-btn text small>Wants to remain anonymous</v-btn>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>

@@ -20,15 +20,6 @@ export const state = () => ({
   chosenServices: [],
 })
 export const mutations = {
-  ADD_ORDER(state, order) {
-    state.orders.push(order)
-  },
-  SET_ORDERS(state, orders) {
-    state.orders = orders
-  },
-  SET_ORDER(state, order) {
-    state.order = order
-  },
   SET_CUSTOMERS(state, customers) {
     state.customers = customers
   },
@@ -56,10 +47,6 @@ export const mutations = {
   ADD_CUSTOMER(state, customer) {
     state.customers.push(customer)
   },
-  UPDATE_ORDER(state, upOrder) {
-    const index = state.orders.findIndex((order) => order.id === upOrder.id)
-    if (index !== -1) state.orders.splice(index, 1, upOrder)
-  },
   UPDATE_CUSTOMER(state, upCustomer) {
     const index = state.customers.findIndex(
       (customer) => customer.id === upCustomer.id,
@@ -84,8 +71,14 @@ export const mutations = {
   SET_TRANSACTION(state, transaction) {
     state.transaction = transaction
   },
+  CLEAR_TRANSACTION(state) {
+    state.transaction = {}
+  },
   ADD_TRANSACTION(state, transaction) {
     state.transactions.push(transaction)
+  },
+  SET_CHOSEN_PRODUCTS(state, products) {
+    state.chosenProducts = products
   },
   ADD_CHOSEN_PRODUCT(state, product) {
     if (!state.chosenProducts.includes(product)) {
@@ -129,6 +122,25 @@ export const mutations = {
   CLEAR_CHOSEN_SERVICES(state) {
     state.chosenServices = []
   },
+  SET_CHOSEN_SERVICES(state, services) {
+    state.chosenServices = services
+  },
+  ADD_ORDER(state, order) {
+    state.orders.push(order)
+  },
+  SET_ORDERS(state, orders) {
+    state.orders = orders
+  },
+  SET_ORDER(state, order) {
+    state.order = order
+  },
+  UPDATE_ORDER(state, upOrder) {
+    const index = state.orders.findIndex((order) => order.id === upOrder.id)
+    if (index !== -1) state.orders.splice(index, 1, upOrder)
+  },
+  UPDATE_ORDER_STATUS(state, status) {
+    state.order.status = status
+  },
   ADD_NOTE_TO_ORDER(state, note) {
     state.order.notes.push(note)
   },
@@ -148,16 +160,28 @@ export const getters = {
   },
 }
 export const actions = {
-  closeWorkOrder({ commit }, id) {
-    this.$axios.post(`/orders/${id}/close`).then((res) => {
-      console.log(res.data)
-    })
-  },
-  payOnWorkOrder({ commit }, transaction) {
-    this.$axios
-      .post(`/orders/${transaction.order}/pay`, transaction)
+  async createOrder({ commit }, order) {
+    return await this.$axios
+      .post('/api/orders', order)
       .then((res) => {
-        return res
+        commit('ADD_ORDER', res.data)
+        return res.data
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  },
+  closeWorkOrder({ commit }, id) {
+    this.$axios.post(`/orders/${id}/close`).then((res) => {})
+  },
+  // server returns response transaction
+  payOnWorkOrder({ commit }, transaction) {
+    transaction.context = 'work-order'
+    this.$axios
+      .post(`/orders/${transaction.order._id}/pay`, transaction)
+      .then((res) => {
+        commit('SET_ORDER', res.data)
+        return res.data
       })
   },
   createNote({ commit }, note) {
@@ -165,68 +189,28 @@ export const actions = {
       commit('ADD_NOTE_TO_ORDER', res.data)
     })
   },
-  addChosenProduct({ commit }, product) {
-    commit('ADD_CHOSEN_PRODUCT', product)
-  },
-  removeChosenProduct({ commit }, product) {
-    commit('REMOVE_CHOSEN_PRODUCT', product)
-  },
-  clearChosenProducts({ commit }) {
-    commit('CLEAR_CHOSEN_PRODUCTS')
-  },
-  addChosenService({ commit }, service) {
-    commit('ADD_CHOSEN_SERVICE', service)
-  },
-  removeChosenService({ commit }, service) {
-    commit('REMOVE_CHOSEN_SERVICE', service)
-  },
-  clearChosenServices({ commit }) {
-    commit('CLEAR_CHOSEN_SERVICES')
-  },
   createRepairOption({ commit }, repair) {
     this.$axios
       .post(`/orders/${repair.order}/addrepair`, repair)
       .then((res) => {
         commit('ADD_REPAIR_OPTION', res.data)
+        commit('UPDATE_ORDER_STATUS', 'needs-approval')
       })
   },
   createOrderTransaction({ commit }, transaction) {
     this.$axios
       .post(`/orders/${transaction.order}/approve`, transaction)
       .then((res) => {
-        commit('ADD_TRANSACTION_TO_ORDER', transaction)
+        commit('ADD_TRANSACTION_TO_ORDER', res.data.transaction)
+        commit('SET_TRANSACTION', res.data.transaction)
+        commit('SET_ORDER', res.data)
       })
-  },
-  async fetchKeywords({ commit }) {
-    await this.$axios.get('/api/keywords').then((res) => {
-      commit('SET_KEYWORDS', res.data)
-    })
-  },
-  async addKeyword({ commit }, keyword) {
-    await this.$axios.post('/api/keywords', keyword).then((res) => {
-      commit('ADD_KEYWORD', res.data)
-    })
-  },
-  async fetchCategories({ commit }) {
-    await this.$axios.get('/api/categories').then((res) => {
-      commit('SET_CATEGORIES', res.data)
-    })
-  },
-  async addCategory({ commit }, category) {
-    await this.$axios.post('/api/categories', category).then((res) => {
-      commit('ADD_CATEGORY', res.data)
-    })
-  },
-  async logout({ commit }) {
-    await this.$axios.delete('/api/logout')
-    commit('SET_USER', null)
   },
   async fetchAllOrders({ commit }) {
     return await this.$axios
       .get('/api/orders')
       .then((res) => {
         commit('SET_ORDERS', res.data)
-        console.log(res.data.length)
         return res.data
       })
       .catch((error) => {
@@ -254,6 +238,54 @@ export const actions = {
       .catch((error) => {
         console.log('failed on fetchOrder action' + error)
       })
+  },
+  setChosenProducts({ commit }, products) {
+    commit('SET_CHOSEN_PRODUCTS', products)
+  },
+  addChosenProduct({ commit }, product) {
+    commit('ADD_CHOSEN_PRODUCT', product)
+  },
+  removeChosenProduct({ commit }, product) {
+    commit('REMOVE_CHOSEN_PRODUCT', product)
+  },
+  clearChosenProducts({ commit }) {
+    commit('CLEAR_CHOSEN_PRODUCTS')
+  },
+  setChosenServices({ commit }, services) {
+    commit('SET_CHOSEN_SERVICES', services)
+  },
+  addChosenService({ commit }, service) {
+    commit('ADD_CHOSEN_SERVICE', service)
+  },
+  removeChosenService({ commit }, service) {
+    commit('REMOVE_CHOSEN_SERVICE', service)
+  },
+  clearChosenServices({ commit }) {
+    commit('CLEAR_CHOSEN_SERVICES')
+  },
+  async fetchKeywords({ commit }) {
+    await this.$axios.get('/api/keywords').then((res) => {
+      commit('SET_KEYWORDS', res.data)
+    })
+  },
+  async addKeyword({ commit }, keyword) {
+    await this.$axios.post('/api/keywords', keyword).then((res) => {
+      commit('ADD_KEYWORD', res.data)
+    })
+  },
+  async fetchCategories({ commit }) {
+    await this.$axios.get('/api/categories').then((res) => {
+      commit('SET_CATEGORIES', res.data)
+    })
+  },
+  async addCategory({ commit }, category) {
+    await this.$axios.post('/api/categories', category).then((res) => {
+      commit('ADD_CATEGORY', res.data)
+    })
+  },
+  async logout({ commit }) {
+    await this.$axios.delete('/api/logout')
+    commit('SET_USER', null)
   },
   async fetchProducts({ commit }) {
     return await this.$axios
@@ -287,12 +319,12 @@ export const actions = {
   async createProduct({ commit }, product) {
     await this.$axios.post('/api/products', product).then((res) => {
       commit('ADD_PRODUCT', res.data)
+      return res.data
     })
   },
   setProduct({ commit, getters }, pid) {
     console.log(pid)
     const product = getters.getProductById(pid)
-    console.log(product)
     commit('SET_PRODUCT', product)
   },
   async fetchServices({ commit }) {
@@ -352,6 +384,7 @@ export const actions = {
       })
   },
   async createTransaction({ commit }, transaction) {
+    if (!transaction.order) transaction.context = 'quick-sale'
     return await this.$axios
       .post('/api/transactions', transaction)
       .then((res) => {
@@ -361,6 +394,9 @@ export const actions = {
       .catch((error) => {
         console.log(error)
       })
+  },
+  clearTransaction({ commit }) {
+    commit('CLEAR_TRANSACTION')
   },
   async fetchTransaction({ commit }, id) {
     return await this.$axios
@@ -382,18 +418,6 @@ export const actions = {
       })
       .catch((error) => {
         console.log(error)
-      })
-  },
-  async createOrder({ commit }, order) {
-    return await this.$axios
-      .post('/api/orders', order)
-      .then((res) => {
-        commit('ADD_ORDER', res.data)
-        console.log(res.data)
-        return res.data
-      })
-      .catch((err) => {
-        console.log(err)
       })
   },
 }

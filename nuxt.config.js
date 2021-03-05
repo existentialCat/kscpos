@@ -45,6 +45,7 @@ export default {
   plugins: [
     '~plugins/vuetify.js',
     '~plugins/axios.js',
+    '~plugins/vue-html-to-paper',
     { src: '~/plugins/vue-timers', mode: 'client' },
   ],
   /*

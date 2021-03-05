@@ -7,6 +7,7 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
+                ref="name"
                 v-model="prod.name"
                 :value="productname"
                 outlined
@@ -21,6 +22,8 @@
               <v-select
                 v-model="prod.keywords"
                 :items="keywords"
+                name="name"
+                item-text="name"
                 multiple
                 outlined
                 label="Keyword"
@@ -92,7 +95,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="postProduct()"> Save </v-btn>
-        <v-btn text @click="$emit('cancelAdd')"> Cancel </v-btn>
+        <v-btn text @click="cancelAdd"> Cancel </v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -106,19 +109,25 @@ export default {
       type: String,
       default: '',
     },
+    productkeyword: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
       prod: {
-        name: '',
+        name: this.productname,
         vendor: '',
         keywords: [],
         brand: '',
         model: '',
         sn: '',
+        taxable: true,
         cost: null,
         price: null,
         qty: null,
+        incart: null,
       },
     }
   },
@@ -126,15 +135,24 @@ export default {
     ...mapState(['keywords']),
   },
   mounted() {
-    this.prod.name = this.productname
+    this.$refs.name.focus()
+    if (this.productkeyword) this.prod.keywords.push(this.productkeyword)
     return this.fetchKeywords()
   },
   methods: {
+    cancelAdd() {
+      this.prod.name = ''
+      this.prod.keywords = []
+      this.$emit('cancelAdd')
+    },
     updateKeywords(selected) {
       this.prod.keywords = selected
     },
     postProduct() {
-      this.createProduct(this.prod).then(() => {
+      this.createProduct(this.prod).then((res) => {
+        console.log(res)
+        // this.prod._id = res._id
+        this.$emit('addCreatedProd', this.prod)
         this.prod = {
           name: '',
           vendor: '',
@@ -145,8 +163,8 @@ export default {
           cost: null,
           price: null,
           qty: null,
+          incart: null,
         }
-        this.$emit('cancelAdd')
       })
     },
     ...mapActions(['fetchKeywords', 'createProduct']),

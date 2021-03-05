@@ -95,10 +95,14 @@
         >
       </v-card>
     </v-dialog>
-    <v-dialog v-model="pickupDialog" persistent max-width="1000px">
+    <v-dialog
+      v-if="order && balancedue <= 0 && !order.completed"
+      v-model="pickupDialog"
+      persistent
+      max-width="1000px"
+    >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
-          v-if="balancedue <= 0 && loadtransaction && !order.completed"
           color="primary"
           :disabled="chosenItems.length == 0"
           v-bind="attrs"
@@ -167,7 +171,6 @@ export default {
       dialog: false,
       change: null,
       paidinfull: false,
-      transactionToPost: {},
       pickupDialog: false,
     }
   },
@@ -176,15 +179,15 @@ export default {
       return this.products.concat(this.services)
     },
     transactionContext() {
-      if (this.$route.fullPath === '/quicksale') {
-        return 'quick-sale'
-      } else return 'work-order'
+      if (this.order) {
+        return 'work-order'
+      } else return 'quick-sale'
     },
   },
   methods: {
     markAsPickedUp() {
       if (this.balancedue <= 0) {
-        this.closeWorkOrder(this.loadtransaction.order).then((res) => {
+        this.closeWorkOrder(this.$route.params.id).then((res) => {
           this.$router.push('/orders/')
           console.log('closing')
         })
@@ -215,33 +218,31 @@ export default {
       if (sufficientPay) {
         this.paidinfull = true
         this.change = difference.toFixed(2)
-        this.transactionToPost.context = this.transactionContext
-        this.transactionToPost.products = this.products
-        this.transactionToPost.services = this.services
-        this.transactionToPost.paid = this.fromCustomer
       } else {
         this.putMoneyDown()
         console.log('unpaid, money put down')
       }
     },
-    async saveTransaction() {
-      if (this.transactionToPost) {
-        if (!this.order) {
-          await this.createTransaction(this.transactionToPost).then((res) => {
-            console.log(res)
-            this.$router.push(`/transactions/${res._id}`)
-          })
-        } else {
-          const transaction = {
-            order: this.loadtransaction.order,
-            paid: this.fromCustomer,
-          }
-          console.log(this.loadtransaction.order)
-          await this.payOnWorkOrder(transaction).then((res) => {
-            console.log(res)
-            this.$router.go(`/orders/${this.loadtransaction.order}`)
-          })
-        }
+    saveTransaction() {
+      const transaction = {
+        paid: this.fromCustomer,
+        products: this.products,
+        services: this.services,
+        balanceDue: this.balancedue,
+        loadtransaction: this.loadtransaction,
+        order: this.order,
+        stage: this.stage,
+        context: 'quick-sale',
+      }
+      if (!this.order) {
+        this.createTransaction(transaction).then((res) => {
+          console.log(res)
+          this.$router.push(`/transactions/${res._id}`)
+        })
+      } else {
+        this.payOnWorkOrder(transaction).then(() => {
+          this.dialog = false
+        })
       }
     },
     ...mapActions(['createTransaction', 'closeWorkOrder', 'payOnWorkOrder']),

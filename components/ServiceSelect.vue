@@ -14,28 +14,7 @@
         single-line
         hide-details
       ></v-text-field
-      ><v-row v-if="$route.path == '/services'" align="center" class="pa-4"
-        >Filter:
-        <v-chip
-          class="ma-1"
-          :color="!filterKeywords.length ? 'primary' : ''"
-          @click="filterKeywords = []"
-          >All</v-chip
-        ><v-chip
-          v-for="keyword in keywords"
-          :key="keyword._id"
-          class="ma-1"
-          :color="filterKeywords.includes(keyword) ? 'primary' : ''"
-          @click="addToFilter(keyword)"
-          >{{ keyword.name }}</v-chip
-        ></v-row
-      ></template
-    >
-    <template v-if="$route.path == '/services'" v-slot:item.keywords="{ item }">
-      <v-chip v-for="keyword in item.keywords" :key="keyword._id" small>
-        {{ keyword.name }}
-      </v-chip>
-    </template>
+    ></template>
     <template v-slot:item.price="{ item }">
       <b>${{ item.price }}</b>
     </template>
@@ -110,21 +89,6 @@ export default {
       ],
       serviceHeaders: [
         { text: 'Service', value: 'name' },
-        {
-          text: 'Keywords',
-          value: 'keywords',
-          filter: (value) => {
-            if (!this.filterKeywords.length) return true
-            if (!value.length) return false
-            const valKeywords = value.map((vk) => vk.name)
-            const keywords = this.filterKeywords.map((k) => k.name)
-            for (const i in valKeywords) {
-              if (keywords.includes(valKeywords[i])) return true
-            }
-          },
-          sortable: false,
-        },
-        { text: 'Brand', value: 'brand' },
         { text: 'Price', value: 'price' },
         { text: 'Action', value: 'actions', sortable: false },
       ],

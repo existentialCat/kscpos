@@ -21,6 +21,7 @@
           ref="transtable"
           :items="transactions"
           :search="search"
+          dense
           :headers="headers"
         >
           <template v-slot:top>
@@ -75,7 +76,16 @@
             </div>
           </template>
           <template v-slot:item.subtotal="{ item }">
-            <b>${{ item.subtotal }}</b>
+            <b>${{ `${((item.subtotal * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.taxes="{ item }">
+            <b>${{ `${((item.taxes * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.paid="{ item }">
+            <b>${{ `${((item.paid * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.balanceDue="{ item }">
+            <b>${{ `${((item.balanceDue * 100) / 100).toFixed(2)}` }}</b>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
@@ -127,6 +137,7 @@ export default {
         { text: 'Services', value: 'services' },
         { text: 'Subtotal', value: 'subtotal' },
         { text: 'Tax', value: 'taxes' },
+        { text: 'Paid', value: 'paid' },
         { text: 'Balance Due', value: 'balanceDue' },
         { text: 'Action', value: 'actions', sortable: false },
       ],

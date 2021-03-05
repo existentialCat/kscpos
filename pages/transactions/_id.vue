@@ -1,5 +1,8 @@
 <template>
-  <div>{{ transaction }}</div>
+  <div>
+    {{ transaction }}<v-btn @click="print()">Print</v-btn>
+    <v-card id="printMe">suh</v-card>
+  </div>
 </template>
 
 <script>
@@ -9,10 +12,16 @@ export default {
     ...mapState(['transaction']),
   },
   mounted() {
-    console.log(this.$route.params.id)
     this.fetchTransaction(this.$route.params.id)
   },
   methods: {
+    print() {
+      this.printMode = true
+      setTimeout(() => {
+        this.$htmlToPaper('printMe')
+        this.printMode = false
+      }, 1000)
+    },
     ...mapActions(['fetchTransaction']),
   },
 }
