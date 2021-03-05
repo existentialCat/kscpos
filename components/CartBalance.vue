@@ -76,6 +76,7 @@
           :services="
             !loadtransaction ? chosenServices : loadtransaction.services
           "
+          :customer="customer"
           :balancedue="balanceDue"
           :loadtransaction="loadtransaction"
           :order="order"
@@ -100,6 +101,10 @@ export default {
       default: null,
     },
     order: {
+      type: Object,
+      default: null,
+    },
+    customer: {
       type: Object,
       default: null,
     },

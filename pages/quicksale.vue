@@ -27,7 +27,7 @@
         </TransactionBuilder>
       </v-col>
       <v-col cols="12" lg="4">
-        <CartBalance></CartBalance>
+        <CartBalance :customer="chosenCustomer"></CartBalance>
       </v-col>
     </v-row>
   </v-container>

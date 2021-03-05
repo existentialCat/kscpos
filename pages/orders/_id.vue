@@ -417,6 +417,7 @@
         ><v-col v-if="order.transaction"
           ><CartBalance
             :products="order.transaction.products"
+            :customer="order.customer"
             :services="order.transaction.services"
             :loadtransaction="order.transaction"
             :order="order"
@@ -481,6 +482,7 @@ export default {
         products: this.chosenRepair.products,
         services: this.chosenRepair.services,
         context: 'work-order',
+        customer: this.order.customer,
       }
       this.createOrderTransaction(transaction)
       this.contactDialog = false

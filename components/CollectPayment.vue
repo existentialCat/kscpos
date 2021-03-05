@@ -137,6 +137,10 @@
 import { mapActions } from 'vuex'
 export default {
   props: {
+    customer: {
+      type: Object,
+      default: null,
+    },
     products: {
       type: Array,
       default: null,
@@ -226,6 +230,7 @@ export default {
     saveTransaction() {
       const transaction = {
         paid: this.fromCustomer,
+        customer: this.customer,
         products: this.products,
         services: this.services,
         balanceDue: this.balancedue,
