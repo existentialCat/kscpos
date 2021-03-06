@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card v-if="printMode" id="printMe" outlined>
-      <v-card-text style="color: black">
+      <v-card-text style="color: black; font-family: 'Roboto'">
         <v-container>
           <v-row align="center">
             <v-col>
@@ -10,7 +10,10 @@
                 >Date: {{ new Date(order.created).toLocaleString() }}</v-row
               >
               <v-row
-                >ORDER ID: {{ order._id.substr(order._id.length - 6) }}</v-row
+                >ORDER ID:
+                {{
+                  order._id.substr(order._id.length - 7).toUpperCase()
+                }}</v-row
               ></v-col
             ><v-col
               ><v-img contain max-width="200px" src="/logo.png"></v-img></v-col
@@ -21,10 +24,10 @@
               <v-row>KeithStoneComputers.com</v-row>
             </v-col></v-row
           >
-          <v-row><h1 style="">Customer</h1></v-row>
+          <v-row><h3>Customer</h3></v-row>
           <v-row>
             <v-col cols="12">
-              <v-card outlined>
+              <v-card outlined tile>
                 <v-card-text style="color: black"
                   ><v-row
                     ><v-col
@@ -42,10 +45,10 @@
               </v-card></v-col
             ></v-row
           >
-          <v-row style=""><h1 style="">System</h1></v-row>
+          <v-row style=""><h3>System</h3></v-row>
           <v-row>
             <v-col cols="12">
-              <v-card outlined>
+              <v-card outlined tile>
                 <v-card-text style="color: black"
                   ><v-row
                     ><v-col
@@ -60,26 +63,24 @@
               </v-card></v-col
             ></v-row
           >
-          <v-row style=""><h1 style="">Problem</h1></v-row>
+          <v-row><h3>Problem</h3></v-row>
           <v-row>
             <v-col cols="12">
-              <v-card outlined>
+              <v-card outlined tile>
                 <v-card-text style="color: black"
                   ><v-row
-                    ><v-col
-                      ><h2>
-                        <b>{{ order.symptoms }}</b>
-                      </h2></v-col
-                    ></v-row
+                    ><v-col>
+                      <b>{{ order.symptoms }}</b>
+                    </v-col></v-row
                   ></v-card-text
                 >
               </v-card></v-col
             ></v-row
           >
-          <v-row style=""><h1 style="">Additional Information</h1></v-row>
+          <v-row><h3>Additional Information</h3></v-row>
           <v-row>
             <v-col cols="12">
-              <v-card outlined>
+              <v-card outlined tile>
                 <v-card-text style="color: black"
                   ><v-row align="center"
                     ><v-col>Items Left: {{ order.itemsLeft[0] }}</v-col
@@ -95,7 +96,7 @@
               </v-card></v-col
             ></v-row
           >
-          <v-row style="" align="center"
+          <v-row align="center"
             ><v-col
               >I have read, undersatnd, and accept the terms and conditions
               stated on this receipt</v-col
@@ -107,30 +108,32 @@
             ><v-col>
               <v-text-field persistent-hint hint="Date"></v-text-field> </v-col
           ></v-row>
-          <v-row style=""><h1 style="">Terms and Conditions</h1></v-row>
+          <v-row style=""><h3>Terms and Conditions</h3></v-row>
           <v-row
             ><v-col
-              >No refunds, exchanges only. *FREE DIAGNOSTICS require a repair
-              for it to be free. DIAGNOSTICS WILL BE $20 EACH FOR ALL
-              DIAGNOSTICS WHEN NO REPAIR OF CURRENT CHECKED IN SYSTEM OR A SALE
-              OF A SYSTEM. While every effort will be made to ensure data
-              handling, Keith Stone Computers will not accept responsibility for
-              the loss of data or programs. Customers are advised to backup any
-              important data or retain their original setup disks for programs
-              on their PC. Only after a complete diagnostic of the PC can the
-              full extent of any problems be identified. The Diagnostics can
-              take 1 to 3 days and we will call the customer when the complete
-              diagnostic has been performed. The customer can call after 3
-              business days to get the results of the diagnostic results. All
-              repairs carry a 60 day parts and labor warranty. Damage or
-              defects, which are in our opinion, directly caused by incorrect or
-              improper use, neglect or by mishandling by the user is
-              specifically excluded from any warranty given or implied. Keith
-              Stone Computers is not liable for any loss/damage of any items
-              left here after 45 days. Any items left after 45 days will be
-              disposed of, without any further notice (layaways are lost after
-              60 days). Keith Stone Computers, 5220 Lewis Ave, Toledo, Ohio
-              43612, Phone: 419-214-0222</v-col
+              ><p style="font-size: x-small !important">
+                No refunds, exchanges only. *FREE DIAGNOSTICS require a repair
+                for it to be free. DIAGNOSTICS WILL BE $20 EACH FOR ALL
+                DIAGNOSTICS WHEN NO REPAIR OF CURRENT CHECKED IN SYSTEM OR A
+                SALE OF A SYSTEM. While every effort will be made to ensure data
+                handling, Keith Stone Computers will not accept responsibility
+                for the loss of data or programs. Customers are advised to
+                backup any important data or retain their original setup disks
+                for programs on their PC. Only after a complete diagnostic of
+                the PC can the full extent of any problems be identified. The
+                Diagnostics can take 1 to 3 days and we will call the customer
+                when the complete diagnostic has been performed. The customer
+                can call after 3 business days to get the results of the
+                diagnostic results. All repairs carry a 60 day parts and labor
+                warranty. Damage or defects, which are in our opinion, directly
+                caused by incorrect or improper use, neglect or by mishandling
+                by the user is specifically excluded from any warranty given or
+                implied. Keith Stone Computers is not liable for any loss/damage
+                of any items left here after 45 days. Any items left after 45
+                days will be disposed of, without any further notice (layaways
+                are lost after 60 days). Keith Stone Computers, 5220 Lewis Ave,
+                Toledo, Ohio 43612, Phone: 419-214-0222
+              </p></v-col
             ></v-row
           >
         </v-container>
@@ -180,7 +183,7 @@
             ><v-card-text>
               <v-row>
                 <v-col cols="12">
-                  <h2>Systems</h2>
+                  <h3>Systems</h3>
                 </v-col>
                 <v-col v-for="system in order.systems" :key="system.id">
                   <v-card
@@ -191,7 +194,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12"><h2>Check in Symptoms</h2></v-col
+                <v-col cols="12"><h3>Check in Symptoms</h3></v-col
                 ><v-col>
                   <v-card
                     ><v-card-title>{{ order.symptoms }}</v-card-title></v-card
