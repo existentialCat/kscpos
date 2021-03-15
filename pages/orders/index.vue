@@ -7,7 +7,7 @@
     <v-card color="blue" class="my-5">
       <v-card-text>
         <v-data-table
-          :items="openorders"
+          :items="openOrders"
           :headers="headers"
           hide-default-footer
         >
@@ -40,7 +40,21 @@
       </v-card-text>
     </v-card>
     <h2>Completed</h2>
-    <v-data-table :items="completedorders" :headers="headers" dense>
+    <v-data-table
+      :items="completedOrders"
+      :headers="completedHeaders"
+      dense
+      :search="orderSearch"
+    >
+      <template v-slot:top>
+        <v-text-field
+          v-model="orderSearch"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field
+      ></template>
       <template v-slot:item.created="{ item }">
         <span>{{ new Date(item.created).toLocaleString() }}</span>
       </template>
@@ -78,23 +92,48 @@ export default {
   },
   data() {
     return {
-      headers: [
+      orderSearch: '',
+    }
+  },
+  computed: {
+    headers() {
+      return [
         { text: 'Customer Name', value: 'customer.fullName' },
         { text: 'Created', value: 'created' },
         { text: 'Picked Up', value: 'completed' },
         { text: 'Systems', value: 'systems' },
         { text: 'Transaction', value: 'transaction' },
         { text: 'Action', value: '_id' },
-      ],
-    }
-  },
-  computed: {
-    openorders() {
+      ]
+    },
+    completedHeaders() {
+      return [
+        { text: 'Customer Name', value: 'customer.fullName' },
+        { text: 'Created', value: 'created' },
+        { text: 'Picked Up', value: 'completed' },
+        {
+          text: 'Systems',
+          value: 'systems',
+          filter: (value) => {
+            if (!this.orderSearch) return true
+            if (!value.length) return false
+            const systemBrands = value.map((sys) => sys.brand)
+            if (systemBrands.includes(this.orderSearch)) {
+              console.log(systemBrands[0])
+              return true
+            } else return true
+          },
+        },
+        { text: 'Transaction', value: 'transaction' },
+        { text: 'Action', value: '_id' },
+      ]
+    },
+    openOrders() {
       return this.orders.filter((o) => {
         return !o.completed
       })
     },
-    completedorders() {
+    completedOrders() {
       const completedOrders = this.orders.filter((o) => {
         return o.completed
       })

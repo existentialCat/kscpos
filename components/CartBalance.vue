@@ -69,6 +69,7 @@
     </v-row>
     <v-row v-if="!noaction">
       <v-col>
+        <slot name="repairSummary"></slot>
         <CollectPayment
           :products="
             !loadtransaction ? chosenProducts : loadtransaction.products

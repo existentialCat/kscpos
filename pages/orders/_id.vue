@@ -424,7 +424,24 @@
             :services="order.transaction.services"
             :loadtransaction="order.transaction"
             :order="order"
-          ></CartBalance></v-col></v-row
+          >
+            <v-card v-if="!finalNoteDialog" slot="repairSummary" class="mb-5">
+              <v-card-text @click="editFinalNote"
+                ><b>{{
+                  order.finalNote ? order.finalNote : 'click to add final note'
+                }}</b></v-card-text
+              >
+            </v-card>
+            <v-textarea
+              v-if="finalNoteDialog"
+              ref="finalNOTE"
+              slot="repairSummary"
+              v-model="repairSummary"
+              outlined
+              label="Summary"
+              :append-icon="repairSummary.length > 3 ? 'mdi-content-save' : ''"
+              @click:append="postFinalNote"
+            ></v-textarea></CartBalance></v-col></v-row
     ></v-container>
   </div>
 </template>
@@ -438,6 +455,8 @@ export default {
   // middleware: 'auth',
   data() {
     return {
+      finalNoteDialog: false,
+      repairSummary: '',
       noteDialog: false,
       noteText: '',
       repairDialog: false,
@@ -472,6 +491,23 @@ export default {
     this.fetchOrder(this.$route.params.id)
   },
   methods: {
+    postFinalNote() {
+      const note = {
+        text: this.repairSummary,
+        order: this.$route.params.id,
+      }
+      if (this.repairSummary !== this.order.finalNote) {
+        this.setFinalNote(note)
+      }
+      this.finalNoteDialog = false
+    },
+    editFinalNote() {
+      if (this.order.finalNote) this.repairSummary = this.order.finalNote
+      this.finalNoteDialog = true
+      setTimeout(() => {
+        this.$refs.finalNOTE.focus()
+      }, 100)
+    },
     print() {
       this.printMode = true
       setTimeout(() => {
@@ -573,6 +609,7 @@ export default {
       'clearChosenProducts',
       'clearChosenServices',
       'createOrderTransaction',
+      'setFinalNote',
     ]),
   },
 }

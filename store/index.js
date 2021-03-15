@@ -125,6 +125,9 @@ export const mutations = {
   SET_CHOSEN_SERVICES(state, services) {
     state.chosenServices = services
   },
+  SET_FINAL_NOTE_ON_ORDER(state, note) {
+    state.order.finalNote = note
+  },
   ADD_ORDER(state, order) {
     state.orders.push(order)
   },
@@ -205,6 +208,11 @@ export const actions = {
         commit('SET_TRANSACTION', res.data.transaction)
         commit('SET_ORDER', res.data)
       })
+  },
+  setFinalNote({ commit }, note) {
+    this.$axios.post(`/orders/${note.order}/setfinalnote`, note).then((res) => {
+      commit('SET_FINAL_NOTE_ON_ORDER', res.data.finalNote)
+    })
   },
   async fetchAllOrders({ commit }) {
     return await this.$axios
