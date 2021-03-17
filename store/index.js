@@ -175,7 +175,9 @@ export const actions = {
       })
   },
   closeWorkOrder({ commit }, id) {
-    this.$axios.post(`/orders/${id}/close`).then((res) => {})
+    this.$axios.post(`/orders/${id}/close`).then((res) => {
+      return res.data
+    })
   },
   // server returns response transaction
   payOnWorkOrder({ commit }, transaction) {

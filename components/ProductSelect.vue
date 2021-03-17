@@ -212,6 +212,7 @@ export default {
         cost: prod.cost,
         price: prod.price,
         qty: prod.qty,
+        taxable: true,
       }
       this.addProduct = false
       this.createProduct(product)

@@ -35,6 +35,7 @@
                     outlined
                     label="Amount Received"
                     autocomplete="new-password"
+                    @keydown.enter="processPay"
                   ></v-text-field>
                 </v-form>
               </v-col>
@@ -191,11 +192,10 @@ export default {
   methods: {
     markAsPickedUp() {
       if (this.balancedue <= 0) {
-        this.closeWorkOrder(this.$route.params.id).then((res) => {
-          this.$router.push('/orders/')
+        this.closeWorkOrder(this.$route.params.id).then(() => {
+          this.$router.push(`/transactions/${this.order.transaction._id}`)
           console.log('closing')
         })
-        this.paiddialog = false
       } else console.log('ORDER HASNT BEEN PAID FOR')
     },
     setExactChange() {
@@ -214,11 +214,21 @@ export default {
       console.log(
         'print out remaining balance owed and keep the system until paid off',
       )
+      // this.postUnpaidTransaction(transaction)
     },
     processPay() {
       const sufficientPay =
-        this.fromCustomer >= parseFloat(this.balancedue).toFixed(2)
+        parseInt(this.fromCustomer) >= parseInt(this.balancedue)
+      console.log(
+        `Does ${this.fromCustomer} cover amount of ${this.balancedue}? ${sufficientPay}`,
+      )
+      console.log(
+        `customer paid ${parseFloat(this.fromCustomer).toFixed(
+          2,
+        )} of which ${parseFloat(this.balancedue).toFixed(2)} is owed`,
+      )
       const difference = parseFloat(this.fromCustomer - this.balancedue)
+      console.log(`$${difference} is difference`)
       if (sufficientPay) {
         this.paidinfull = true
         this.change = difference.toFixed(2)
@@ -233,7 +243,7 @@ export default {
         customer: this.customer,
         products: this.products,
         services: this.services,
-        balanceDue: this.balancedue,
+        // balanceDue: this.balancedue,
         loadtransaction: this.loadtransaction,
         order: this.order,
         stage: this.stage,
@@ -245,6 +255,7 @@ export default {
           this.$router.push(`/transactions/${res._id}`)
         })
       } else {
+        console.log(transaction)
         this.payOnWorkOrder(transaction).then(() => {
           this.dialog = false
         })
