@@ -63,7 +63,8 @@
                 </h2></v-col
               >
               <v-card-actions>
-                <v-btn color="primary">Print Invoice and Save</v-btn
+                <v-btn color="primary" @click="saveTransaction"
+                  >Print Invoice and Save</v-btn
                 ><v-btn text color="error" @click="partialpay = false"
                   >Go Back</v-btn
                 ></v-card-actions
@@ -209,13 +210,6 @@ export default {
         }, 100)
       }
     },
-    putMoneyDown() {
-      this.partialpay = true
-      console.log(
-        'print out remaining balance owed and keep the system until paid off',
-      )
-      // this.postUnpaidTransaction(transaction)
-    },
     processPay() {
       const sufficientPay =
         parseInt(this.fromCustomer) >= parseInt(this.balancedue)
@@ -233,8 +227,7 @@ export default {
         this.paidinfull = true
         this.change = difference.toFixed(2)
       } else {
-        this.putMoneyDown()
-        console.log('unpaid, money put down')
+        this.partialpay = true
       }
     },
     saveTransaction() {
@@ -243,21 +236,18 @@ export default {
         customer: this.customer,
         products: this.products,
         services: this.services,
-        // balanceDue: this.balancedue,
-        loadtransaction: this.loadtransaction,
+        balanceDue: this.balancedue - this.fromCustomer,
         order: this.order,
         stage: this.stage,
         context: 'quick-sale',
       }
       if (!this.order) {
         this.createTransaction(transaction).then((res) => {
-          console.log(res)
           this.$router.push(`/transactions/${res._id}`)
         })
       } else {
-        console.log(transaction)
-        this.payOnWorkOrder(transaction).then(() => {
-          this.dialog = false
+        this.payOnWorkOrder(transaction).then((res) => {
+          this.$router.push(`/transactions/${res.transaction._id}`)
         })
       }
     },

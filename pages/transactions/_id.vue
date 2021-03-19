@@ -95,17 +95,17 @@
             ><v-spacer /><v-col
               ><v-row
                 ><v-col cols="4">Subtotal</v-col
-                ><v-col cols="2"
+                ><v-col cols="4"
                   ><b>${{ transaction.subtotal }}</b></v-col
                 ></v-row
               ><v-row
                 ><v-col cols="4">Taxes</v-col
-                ><v-col cols="2"
+                ><v-col cols="4"
                   ><b>${{ transaction.taxes }}</b></v-col
                 ></v-row
               ><v-row
                 ><v-col cols="4">Invoice Total</v-col
-                ><v-col cols="2"
+                ><v-col cols="4"
                   ><b
                     >${{
                       parseFloat(
@@ -116,23 +116,22 @@
                 ></v-row
               ><v-row
                 ><v-col cols="4">Paid</v-col
-                ><v-col cols="2"
-                  ><b
-                    >${{
-                      transaction.paid > transaction.balanceDue
-                        ? parseFloat(
-                            transaction.taxes + transaction.subtotal,
-                          ).toFixed(2)
-                        : 0
-                    }}</b
-                  ></v-col
+                ><v-col cols="4"
+                  ><b>${{ transaction.paid.toFixed(2) }}</b></v-col
                 ></v-row
-              ><v-row
+              ><v-row v-if="transaction.balanceDue > transaction.paid"
                 ><v-col cols="4">Balance Due</v-col
-                ><v-col cols="2"
+                ><v-col cols="4"
+                  ><b>${{ transaction.balanceDue }}</b></v-col
+                ></v-row
+              ><v-row v-else
+                ><v-col cols="4">Change:</v-col
+                ><v-col cols="4"
                   ><b
                     >${{
-                      transaction.balanceDue > 0 ? transaction.balanceDue : 0
+                      transaction.balanceDue > 0
+                        ? parseFloat(transaction.balanceDue).toFixed(2)
+                        : parseFloat(transaction.balanceDue * -1).toFixed(2)
                     }}</b
                   ></v-col
                 ></v-row

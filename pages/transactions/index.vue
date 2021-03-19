@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <h2>Transactions</h2>
     <v-row>
       <v-col v-if="transactions.length"
         ><b>Total Unfinished or Stashed:</b> calculate
@@ -15,6 +14,70 @@
         ><b>Number of completed work orders:</b> calculate</v-col
       >
     </v-row>
+    <v-row> <h2>Layaways</h2></v-row>
+    <v-card color="yellow" class="my-5">
+      <v-card-text
+        ><v-data-table
+          :items="layaways"
+          :headers="layawayHeaders"
+          hide-default-footer
+          class="pa-1"
+        >
+          <template v-slot:item.created="{ item }">
+            <div style="">
+              {{ new Date(item.created).toLocaleString() }}
+            </div>
+          </template>
+          <template v-slot:item.completed="{ item }">
+            <div style="">
+              {{
+                item.completed
+                  ? new Date(item.completed).toLocaleString()
+                  : 'False'
+              }}
+            </div>
+          </template>
+          <template v-slot:item.products="{ item }">
+            <div v-for="(product, index) in item.products" :key="product._id">
+              {{ product.name
+              }}{{ item.products.length - 1 > index ? ',' : '' }}
+            </div>
+          </template>
+          <template v-slot:item.services="{ item }">
+            <div v-for="(service, index) in item.services" :key="service._id">
+              {{ service.name
+              }}{{ item.services.length - 1 > index ? ',' : '' }}
+            </div>
+          </template>
+          <template v-slot:item.subtotal="{ item }">
+            <b>${{ `${((item.subtotal * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.taxes="{ item }">
+            <b>${{ `${((item.taxes * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.paid="{ item }">
+            <b>${{ `${((item.paid * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.balanceDue="{ item }">
+            <b>${{ `${((item.balanceDue * 100) / 100).toFixed(2)}` }}</b>
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-btn
+              text
+              small
+              @click="$router.push(`/transactions/${item._id}`)"
+            >
+              Open
+            </v-btn>
+          </template>
+          <template v-slot:no-results
+            >Transaction not found under that search.</template
+          >
+          <template v-slot:no-data>No transactions></template></v-data-table
+        ></v-card-text
+      ></v-card
+    >
+    <v-row> <h2>All Transactions</h2></v-row>
     <v-row>
       <v-col
         ><v-data-table
@@ -141,9 +204,24 @@ export default {
         { text: 'Balance Due', value: 'balanceDue' },
         { text: 'Action', value: 'actions', sortable: false },
       ],
+      layawayHeaders: [
+        { text: 'Started', value: 'created' },
+        { text: 'Products', value: 'products' },
+        // { text: 'Vendor', value: 'vendor' },
+        { text: 'Subtotal', value: 'subtotal' },
+        { text: 'Tax', value: 'taxes' },
+        { text: 'Paid', value: 'paid' },
+        { text: 'Balance Due', value: 'balanceDue' },
+        { text: 'Action', value: 'actions', sortable: false },
+      ],
     }
   },
   computed: {
+    layaways() {
+      return this.transactions.filter((t) => {
+        return t.balanceDue > 0 && t.context === 'quick-sale'
+      })
+    },
     ...mapState(['transactions']),
   },
   mounted() {

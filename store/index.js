@@ -179,10 +179,20 @@ export const actions = {
       return res.data
     })
   },
-  // server returns response transaction
-  payOnWorkOrder({ commit }, transaction) {
-    transaction.context = 'work-order'
-    this.$axios
+  async createTransaction({ commit }, transaction) {
+    if (!transaction.order) transaction.context = 'quick-sale'
+    return await this.$axios
+      .post('/api/transactions', transaction)
+      .then((res) => {
+        commit('ADD_TRANSACTION', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  async payOnWorkOrder({ commit }, transaction) {
+    return await this.$axios
       .post(`/orders/${transaction.order._id}/pay`, transaction)
       .then((res) => {
         commit('SET_ORDER', res.data)
@@ -391,18 +401,6 @@ export const actions = {
       })
       .catch((error) => {
         console.log('failed on createCustomer action' + error)
-      })
-  },
-  async createTransaction({ commit }, transaction) {
-    if (!transaction.order) transaction.context = 'quick-sale'
-    return await this.$axios
-      .post('/api/transactions', transaction)
-      .then((res) => {
-        commit('ADD_TRANSACTION', res.data)
-        return res.data
-      })
-      .catch((error) => {
-        console.log(error)
       })
   },
   clearTransaction({ commit }) {
