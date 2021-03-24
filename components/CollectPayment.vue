@@ -231,24 +231,26 @@ export default {
       }
     },
     saveTransaction() {
-      const transaction = {
-        paid: this.fromCustomer,
-        customer: this.customer,
-        products: this.products,
-        services: this.services,
-        balanceDue: this.balancedue - this.fromCustomer,
-        order: this.order,
-        stage: this.stage,
-        context: 'quick-sale',
-      }
-      if (!this.order) {
-        this.createTransaction(transaction).then((res) => {
-          this.$router.push(`/transactions/${res._id}`)
-        })
-      } else {
-        this.payOnWorkOrder(transaction).then((res) => {
-          this.$router.push(`/transactions/${res.transaction._id}`)
-        })
+      if (this.customer) {
+        const transaction = {
+          paid: this.fromCustomer,
+          customer: this.customer,
+          products: this.products,
+          services: this.services,
+          balanceDue: this.balancedue - this.fromCustomer,
+          order: this.order,
+          stage: this.stage,
+          context: 'quick-sale',
+        }
+        if (!this.order) {
+          this.createTransaction(transaction).then((res) => {
+            this.$router.push(`/transactions/${res._id}`)
+          })
+        } else {
+          this.payOnWorkOrder(transaction).then((res) => {
+            this.$router.push(`/transactions/${res.transaction._id}`)
+          })
+        }
       }
     },
     ...mapActions(['createTransaction', 'closeWorkOrder', 'payOnWorkOrder']),
