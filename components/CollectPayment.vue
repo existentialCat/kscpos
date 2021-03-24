@@ -240,7 +240,6 @@ export default {
           balanceDue: this.balancedue - this.fromCustomer,
           order: this.order,
           stage: this.stage,
-          context: 'quick-sale',
         }
         if (!this.order) {
           this.createTransaction(transaction).then((res) => {
