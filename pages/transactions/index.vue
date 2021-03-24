@@ -148,7 +148,7 @@
             <b>${{ `${((item.paid * 100) / 100).toFixed(2)}` }}</b>
           </template>
           <template v-slot:item.balanceDue="{ item }">
-            <b>${{ `${((item.balanceDue * 100) / 100).toFixed(2)}` }}</b>
+            <b>${{ `${parseFloat(item.balanceDue).toFixed(2)}` }}</b>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn
