@@ -153,7 +153,7 @@ export default {
       if (!transaction) {
         return 'No Transaction'
       } else if (transaction.balanceDue >= 0) {
-        return 'Balance Due: $' + transaction.balanceDue
+        return 'Balance Due: $' + parseFloat(transaction.balanceDue).toFixed(2)
       } else return 'Completed'
     },
     ...mapActions(['fetchAllOrders']),
