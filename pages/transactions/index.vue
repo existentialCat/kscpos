@@ -180,6 +180,7 @@ export default {
       headers: [
         { text: 'Created', value: 'created' },
         { text: 'Completed', value: 'completed' },
+        { text: 'Customer', value: 'customer.fullName' },
         {
           text: 'Context',
           value: 'context',
