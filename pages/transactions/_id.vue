@@ -122,7 +122,9 @@
               ><v-row v-if="transaction.balanceDue > transaction.paid"
                 ><v-col cols="4">Balance Due</v-col
                 ><v-col cols="4"
-                  ><b>${{ transaction.balanceDue }}</b></v-col
+                  ><b
+                    >${{ parseFloat(transaction.balanceDue).toFixed(2) }}</b
+                  ></v-col
                 ></v-row
               ><v-row v-else
                 ><v-col cols="4">Change:</v-col
