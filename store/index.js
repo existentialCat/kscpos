@@ -381,6 +381,17 @@ export const actions = {
       commit('ADD_SERVICE', res.data)
     })
   },
+  async fetchCustomer({ commit }, id) {
+    return await this.$axios
+      .get(`/api/customers/${id}`)
+      .then((res) => {
+        commit('SET_CUSTOMER', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log('failed on fetchAllCustomers action' + error)
+      })
+  },
   async fetchAllCustomers({ commit }) {
     return await this.$axios
       .get('/api/customers')
