@@ -95,7 +95,7 @@
             :productname="productSearch"
             :productkeyword="productKeyword"
             @postProd="postProduct"
-            @cancelAdd="addProduct = false"
+            @closeAdd="addProduct = false"
           ></CreateProduct> </v-dialog
       ></template>
     </v-data-table>
@@ -105,8 +105,7 @@
         :productname="productSearch"
         :productkeyword="productKeyword"
         @postProd="postProduct"
-        @cancelAdd="addProduct = false"
-        @addCreatedProd="addCreatedProd"
+        @closeAdd="addProduct = false"
       ></CreateProduct>
     </v-dialog>
   </div>
@@ -180,10 +179,6 @@ export default {
     this.fetchKeywords()
   },
   methods: {
-    addCreatedProd(prod) {
-      this.addProduct = false
-      this.productSearch = prod.name
-    },
     setupNewProd(option) {
       if (option === 'desktop') {
         this.productSearch = 'Desktop - '

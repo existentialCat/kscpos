@@ -63,8 +63,7 @@
                 </h2></v-col
               >
               <v-card-actions>
-                <v-btn color="primary" @click="saveTransaction"
-                  >Print Invoice and Save</v-btn
+                <v-btn color="primary" @click="saveTransaction">Save</v-btn
                 ><v-btn text color="error" @click="partialpay = false"
                   >Go Back</v-btn
                 ></v-card-actions
@@ -86,8 +85,7 @@
               ><v-col v-if="change > 0" cols="12"
                 ><h2>Give change: ${{ change }}</h2></v-col
               ><v-col
-                ><v-btn color="primary" @click="saveTransaction"
-                  >Print Invoice and Save</v-btn
+                ><v-btn color="primary" @click="saveTransaction">Save</v-btn
                 ><v-btn text color="error" @click="paidinfull = false"
                   >Go Back</v-btn
                 ></v-col

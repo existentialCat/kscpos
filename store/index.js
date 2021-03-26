@@ -339,6 +339,7 @@ export const actions = {
   async createProduct({ commit }, product) {
     await this.$axios.post('/api/products', product).then((res) => {
       commit('ADD_PRODUCT', res.data)
+      console.log(res)
       return res.data
     })
   },

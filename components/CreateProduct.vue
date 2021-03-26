@@ -143,16 +143,13 @@ export default {
     cancelAdd() {
       this.prod.name = ''
       this.prod.keywords = []
-      this.$emit('cancelAdd')
+      this.$emit('closeAdd')
     },
     updateKeywords(selected) {
       this.prod.keywords = selected
     },
     postProduct() {
-      this.createProduct(this.prod).then((res) => {
-        console.log(res)
-        // this.prod._id = res._id
-        this.$emit('addCreatedProd', this.prod)
+      this.createProduct(this.prod).then(() => {
         this.prod = {
           name: '',
           vendor: '',
@@ -166,6 +163,7 @@ export default {
           incart: null,
         }
       })
+      this.$emit('closeAdd')
     },
     ...mapActions(['fetchKeywords', 'createProduct']),
   },

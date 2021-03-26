@@ -1,6 +1,15 @@
 <template>
-  <div>
-    {{ transaction }}<v-btn @click="print()">Print</v-btn>
+  <v-container>
+    <v-row>
+      <v-btn class="ma-5" color="primary" x-large @click="print()">Print</v-btn>
+      <v-btn
+        v-if="transaction.order"
+        class="ma-5"
+        x-large
+        @click="$router.push(`/orders/${transaction.order._id}`)"
+        >Go To Order</v-btn
+      >
+    </v-row>
     <v-card id="printMe" class="printMe">
       <v-card-text style="font-family: 'Roboto'">
         <v-container>
@@ -143,7 +152,7 @@
         </v-container>
       </v-card-text>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script>

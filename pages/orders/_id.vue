@@ -140,7 +140,16 @@
       </v-card-text>
     </v-card>
     <v-container v-if="order.customer.fullName">
-      <v-btn @click="print()">Print</v-btn>
+      <v-row>
+        <v-btn class="ma-5" x-large @click="print()">Print Checkin Sheet</v-btn>
+        <v-btn
+          v-if="order.transaction"
+          class="ma-5"
+          x-large
+          @click="$router.push(`/transactions/${order.transaction._id}`)"
+          >Go To Invoice</v-btn
+        >
+      </v-row>
       <v-row>
         <v-col v-if="order.status" cols="12"
           ><v-card
