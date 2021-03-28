@@ -10,6 +10,15 @@
         >Go To Order</v-btn
       >
     </v-row>
+    <CollectPayment
+      v-if="transaction.balanceDue > 0"
+      :products="transaction.products"
+      :services="transaction.products"
+      :customer="transaction.customer"
+      :balancedue="parseFloat(transaction.balanceDue)"
+      :loadtransaction="transaction"
+    >
+    </CollectPayment>
     <v-card id="printMe" class="printMe">
       <v-card-text style="font-family: 'Roboto'">
         <v-container>
@@ -128,7 +137,7 @@
                 ><v-col cols="4"
                   ><b>${{ transaction.paid.toFixed(2) }}</b></v-col
                 ></v-row
-              ><v-row v-if="transaction.balanceDue > transaction.paid"
+              ><v-row v-if="transaction.balanceDue > 0"
                 ><v-col cols="4">Balance Due</v-col
                 ><v-col cols="4"
                   ><b

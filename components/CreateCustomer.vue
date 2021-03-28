@@ -59,6 +59,16 @@ export default {
   },
   methods: {
     createCustomer() {
+      const nameArr = this.customer.fullName.split(' ')
+      for (const i in nameArr) {
+        const name = nameArr[i]
+        const letterArr = name.split('')
+        letterArr[0] = letterArr[0].toUpperCase()
+        const capitalName = letterArr.join('')
+        nameArr[i] = capitalName
+      }
+      const nameString = nameArr.join(' ')
+      this.customer.fullName = nameString
       this.$emit('postCustomer', this.customer)
     },
   },

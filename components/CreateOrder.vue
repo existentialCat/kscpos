@@ -109,6 +109,16 @@
                     <v-stepper-items>
                       <v-stepper-content step="2">
                         <v-row>
+                          <v-col>
+                            <v-card
+                              v-for="(system, index) in systems"
+                              :key="index"
+                            >
+                              <v-card-text>{{ system }}</v-card-text>
+                            </v-card>
+                          </v-col>
+                        </v-row>
+                        <v-row>
                           <v-col
                             ><v-select
                               v-model="sysType"
@@ -151,7 +161,9 @@
                               label="Symptoms"
                               autocomplete="new-password"
                             ></v-textarea></v-col
-                          ><v-btn v-if="systemLoaded">Add Another System</v-btn>
+                          ><v-btn v-if="systemLoaded" @click="addSystem"
+                            >Add Another System</v-btn
+                          >
                           <v-col cols="12"> <v-divider></v-divider> </v-col
                           ><v-col cols="6">
                             <v-combobox
@@ -207,6 +219,7 @@ export default {
       sysType: '',
       sn: '',
       symptoms: '',
+      symptomArr: [],
       dialog: false,
       step: 1,
       chosenCustomer: {},
@@ -226,6 +239,7 @@ export default {
     systemLoaded() {
       const hasSymptoms = this.symptoms.length > 0
       const hasSysType = this.sysType.length > 0
+      if (this.systems.length) return true
       return hasSymptoms && hasSysType
     },
     infoCollected() {
@@ -238,6 +252,22 @@ export default {
     return this.fetchAllCustomers()
   },
   methods: {
+    addSystem() {
+      const system = {
+        brand: this.brand,
+        model: this.model,
+        sysType: this.sysType,
+        sn: this.sn,
+        symptom: this.symptoms,
+      }
+      this.symptomArr.push(this.symptoms)
+      this.symptoms = ''
+      this.brand = ''
+      this.model = ''
+      this.sysType = ''
+      this.sn = ''
+      this.systems.push(system)
+    },
     postCustomer(cust) {
       const customer = {
         fullName: cust.fullName,
@@ -251,7 +281,8 @@ export default {
       if (this.accessory && this.accessory.length >= 1) {
         this.itemsLeft.push(this.accessory)
       }
-      if (this.systemLoaded) {
+      const loadedFields = this.sysType.length && this.symptoms.length
+      if (loadedFields) {
         const system = {
           sysType: this.sysType,
           brand: this.brand,
@@ -259,14 +290,22 @@ export default {
           sn: this.sn,
         }
         this.systems.push(system)
+        this.symptomArr.push(this.symptoms)
+        this.sysType = ''
+        this.brand = ''
+        this.symptoms = ''
+        this.model = ''
+        this.sn = ''
       }
+      console.log(this.symptomArr)
+      const symptomString = this.symptomArr.join(' ')
       const order = {
         customerId: this.chosenCustomer._id,
         context: 'work-order',
         agreeToTerms: true,
         itemsLeft: this.itemsLeft,
         systems: this.systems,
-        symptoms: this.symptoms,
+        symptoms: symptomString,
       }
       console.log(order)
       this.createOrder(order).then((res) => {

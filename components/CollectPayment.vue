@@ -229,28 +229,41 @@ export default {
       }
     },
     saveTransaction() {
-      if (this.customer) {
-        const transaction = {
+      const transaction = {
+        paid: this.fromCustomer,
+        customer: this.customer,
+        products: this.products,
+        services: this.services,
+        balanceDue: this.balancedue - this.fromCustomer,
+        order: this.order,
+        stage: this.stage,
+      }
+      if (!this.loadtransaction) {
+        console.log('pay for quicksale')
+        this.createTransaction(transaction).then((res) => {
+          this.$router.push(`/transactions/${res._id}`)
+        })
+      } else if (this.order) {
+        console.log('pay on work order')
+        this.payOnWorkOrder(transaction).then((res) => {
+          this.$router.push(`/transactions/${res.transaction._id}`)
+        })
+      } else {
+        const layaway = {
+          transaction: this.loadtransaction._id,
           paid: this.fromCustomer,
-          customer: this.customer,
-          products: this.products,
-          services: this.services,
-          balanceDue: this.balancedue - this.fromCustomer,
-          order: this.order,
-          stage: this.stage,
         }
-        if (!this.order) {
-          this.createTransaction(transaction).then((res) => {
-            this.$router.push(`/transactions/${res._id}`)
-          })
-        } else {
-          this.payOnWorkOrder(transaction).then((res) => {
-            this.$router.push(`/transactions/${res.transaction._id}`)
-          })
-        }
+        this.payOnLayaway(layaway).then((res) => {
+          this.$router.go(`/transactions/${res._id}`)
+        })
       }
     },
-    ...mapActions(['createTransaction', 'closeWorkOrder', 'payOnWorkOrder']),
+    ...mapActions([
+      'createTransaction',
+      'closeWorkOrder',
+      'payOnWorkOrder',
+      'payOnLayaway',
+    ]),
   },
 }
 </script>

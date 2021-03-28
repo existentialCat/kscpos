@@ -105,6 +105,7 @@ export default {
       }
       this.addCustomer = false
       this.createCustomer(customer).then((res) => {
+        console.log(customer)
         this.chosenCustomer = res
         this.$emit('chooseCustomer', this.chosenCustomer)
       })

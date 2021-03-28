@@ -100,7 +100,6 @@ export default {
       return [
         { text: 'Customer Name', value: 'customer.fullName' },
         { text: 'Created', value: 'created' },
-        { text: 'Picked Up', value: 'completed' },
         { text: 'Systems', value: 'systems' },
         { text: 'Transaction', value: 'transaction' },
         { text: 'Action', value: '_id' },

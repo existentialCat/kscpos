@@ -164,10 +164,12 @@ export const getters = {
 }
 export const actions = {
   async createOrder({ commit }, order) {
+    console.log('creating order')
     return await this.$axios
       .post('/api/orders', order)
       .then((res) => {
         commit('ADD_ORDER', res.data)
+        console.log(res.data)
         return res.data
       })
       .catch((err) => {
@@ -189,6 +191,14 @@ export const actions = {
       })
       .catch((error) => {
         console.log(error)
+      })
+  },
+  async payOnLayaway({ commit }, layaway) {
+    console.log('payOnLawayay in store is running')
+    return await this.$axios
+      .post(`/api/transactions/${layaway.transaction}/pay`, layaway)
+      .then((res) => {
+        return res.data
       })
   },
   async payOnWorkOrder({ commit }, transaction) {
