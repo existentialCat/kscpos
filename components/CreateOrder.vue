@@ -114,7 +114,13 @@
                               v-for="(system, index) in systems"
                               :key="index"
                             >
-                              <v-card-text>{{ system }}</v-card-text>
+                              <v-card-text
+                                ><v-row
+                                  ><v-col>{{ system.sysType }}</v-col
+                                  ><v-col>{{ system.brand }}</v-col
+                                  ><v-col>{{ system.model }}</v-col
+                                  ><v-col></v-col></v-row
+                              ></v-card-text>
                             </v-card>
                           </v-col>
                         </v-row>
@@ -260,11 +266,25 @@ export default {
         sn: this.sn,
         symptom: this.symptoms,
       }
-      this.symptomArr.push(this.symptoms)
+      const systemSymptoms =
+        '|' +
+        system.brand +
+        ' ' +
+        system.model +
+        `|: ` +
+        this.symptoms +
+        '          '
+      console.log(systemSymptoms)
+      this.symptomArr.push(systemSymptoms)
       this.symptoms = ''
       this.brand = ''
       this.model = ''
       this.sysType = ''
+      this.sn = ''
+      this.sysType = ''
+      this.brand = ''
+      this.symptoms = ''
+      this.model = ''
       this.sn = ''
       this.systems.push(system)
     },
@@ -289,8 +309,18 @@ export default {
           model: this.model,
           sn: this.sn,
         }
+        if (this.systems.length > 0) {
+          const systemSymptoms =
+            '|' +
+            system.brand +
+            ' ' +
+            system.model +
+            `|: ` +
+            this.symptoms +
+            '          '
+          this.symptomArr.push(systemSymptoms)
+        } else this.symptomArr.push(this.symptoms)
         this.systems.push(system)
-        this.symptomArr.push(this.symptoms)
         this.sysType = ''
         this.brand = ''
         this.symptoms = ''

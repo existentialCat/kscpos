@@ -2,10 +2,12 @@
   <v-container>
     <v-row>
       <v-col v-if="transactions.length"
-        ><b>Total Unfinished or Stashed:</b> calculate
-      </v-col>
-      <v-col v-if="transactions.length"
-        ><b>Sales Tax Collected:</b> calculate
+        ><b>Sales Tax Collected:</b>{{ ` $${accumulateTaxes(selectRange)}` }}
+        <v-select
+          v-model="selectRange"
+          :items="dateRange"
+          :value="thisMonth"
+        ></v-select>
       </v-col>
       <v-col v-if="transactions.length"
         ><b>Number of completed quick-sale:</b> calculate</v-col
@@ -174,6 +176,22 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
+      selectRange: '',
+      dateRange: [
+        'Janurary',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+        'Year',
+      ],
       search: '',
       filterBy: ['quick-sale', 'completed', 'incomplete', 'work-order'],
       filterSelected: [],
@@ -218,6 +236,11 @@ export default {
     }
   },
   computed: {
+    thisMonth() {
+      const d = new Date()
+      console.log(d.getMonth())
+      return this.dateRange[d.getMonth()]
+    },
     layaways() {
       return this.transactions.filter((t) => {
         return t.balanceDue > 0 && t.context === 'quick-sale'
@@ -226,9 +249,23 @@ export default {
     ...mapState(['transactions']),
   },
   mounted() {
+    this.selectRange = this.thisMonth
     this.fetchAllTransactions()
   },
   methods: {
+    accumulateTaxes(range) {
+      const completed = this.transactions.filter((t) => t.completed)
+      const rangeOfTaxes = completed.filter(
+        (c) => this.dateRange[new Date(c.completed).getMonth()] === range,
+      )
+      const justTaxes = rangeOfTaxes.map((rot) => rot.taxes)
+      if (justTaxes.length) {
+        const accumulated = justTaxes.reduce((a, b) => {
+          return a + b
+        })
+        return accumulated
+      } else return 0
+    },
     addToFilter(k) {
       if (this.filterSelected.includes(k)) {
         const index = this.filterSelected.indexOf(k)

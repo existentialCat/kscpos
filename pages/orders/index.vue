@@ -10,6 +10,7 @@
           :items="openOrders"
           :headers="headers"
           hide-default-footer
+          :items-per-page="100"
         >
           <template v-slot:item.created="{ item }">
             <span>{{ new Date(item.created).toLocaleString() }}</span>
