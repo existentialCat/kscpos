@@ -319,6 +319,17 @@ export const actions = {
   },
   async fetchProducts({ commit }) {
     return await this.$axios
+      .get('/products')
+      .then((res) => {
+        commit('SET_PRODUCTS', res.data)
+        return res.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  async fetchAllProducts({ commit }) {
+    return await this.$axios
       .get('/api/products')
       .then((res) => {
         commit('SET_PRODUCTS', res.data)

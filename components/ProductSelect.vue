@@ -85,28 +85,109 @@
       </template>
       <template v-slot:no-results
         >Product not found.
-        <v-dialog v-model="addProduct" persistent max-width="1000px">
-          <template v-slot:activator="{ on, attrs }"
-            ><v-btn small outlined v-bind="attrs" v-on="on"
-              >Add as New</v-btn
-            ></template
-          >
-          <CreateProduct
-            :productname="productSearch"
-            :productkeyword="productKeyword"
-            @postProd="postProduct"
-            @closeAdd="addProduct = false"
-          ></CreateProduct> </v-dialog
-      ></template>
+        <v-btn @click="addProduct = true">Add as new</v-btn></template
+      >
     </v-data-table>
     <v-dialog v-model="addProduct" persistent max-width="1000px">
-      <CreateProduct
-        :key="productSearch"
-        :productname="productSearch"
-        :productkeyword="productKeyword"
-        @postProd="postProduct"
-        @closeAdd="addProduct = false"
-      ></CreateProduct>
+      <v-card>
+        <v-card-title class="headline grey lighten-2">
+          New Product
+        </v-card-title>
+        <v-card-text class="py-2">
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  ref="name"
+                  v-model="prod.name"
+                  outlined
+                  label="Name"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <!-- <KeywordSelector
+                @updatekeywords="updateKeywords"
+              ></KeywordSelector> -->
+                <v-select
+                  v-model="prod.keywords"
+                  :items="keywords"
+                  name="name"
+                  item-text="name"
+                  multiple
+                  outlined
+                  label="Keyword"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.brand"
+                  outlined
+                  label="Brand"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.model"
+                  outlined
+                  label="Model"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.sn"
+                  outlined
+                  label="SN"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.vendor"
+                  outlined
+                  label="Vendor"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.cost"
+                  type="number"
+                  outlined
+                  label="cost"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.price"
+                  type="number"
+                  outlined
+                  label="price"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="4" lg="3">
+                <v-text-field
+                  v-model="prod.qty"
+                  type="number"
+                  outlined
+                  label="qty"
+                  autocomplete="new-password"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="postProduct()"> Save </v-btn>
+          <v-btn text @click="addProduct = false"> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
   </div>
 </template>
@@ -125,7 +206,22 @@ export default {
       productKeyword: null,
       showTemplates: false,
       productSearch: '',
+      isTemplate: false,
       addProduct: false,
+      prod: {
+        name: '',
+        vendor: '',
+        keywords: [],
+        brand: '',
+        model: '',
+        sn: '',
+        taxable: true,
+        cost: null,
+        price: null,
+        qty: null,
+        incart: null,
+        prodTemplate: false,
+      },
       productHeadersMin: [
         { text: 'Product', value: 'name' },
         {
@@ -181,36 +277,27 @@ export default {
   methods: {
     setupNewProd(option) {
       if (option === 'desktop') {
-        this.productSearch = 'Desktop - '
+        this.prod.name = 'Desktop - '
+        this.prod.prodTemplate = true
         this.productKeyword = this.keywords.filter((k) => k.name === 'Tower')[0]
       }
       if (option === 'laptop') {
-        this.productSearch = 'Laptop - '
+        this.prod.name = 'Laptop - '
+        this.prod.prodTemplate = true
         this.productKeyword = this.keywords.filter(
           (k) => k.name === 'Laptop',
         )[0]
       }
       if (option === 'special') {
-        this.productSearch = 'Special Ordered Part - '
+        this.prod.name = 'Special Ordered Part - '
+        this.prod.prodTemplate = true
         this.productKeyword = null
       }
       this.addProduct = true
     },
-    postProduct(prod) {
-      const product = {
-        name: prod.name,
-        vendor: prod.vendor,
-        keywords: prod.keywords,
-        brand: prod.brand,
-        model: prod.model,
-        sn: prod.sn,
-        cost: prod.cost,
-        price: prod.price,
-        qty: prod.qty,
-        taxable: true,
-      }
+    postProduct() {
       this.addProduct = false
-      this.createProduct(product)
+      this.createProduct(this.prod)
     },
     addToFilter(k) {
       if (this.filterKeywords.includes(k)) {
