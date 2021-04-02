@@ -39,13 +39,13 @@ export const mutations = {
     state.service = service
   },
   ADD_SERVICE(state, service) {
-    state.services.push(service)
+    state.services.unshift(service)
   },
   SET_CUSTOMER(state, customer) {
     state.customer = customer
   },
   ADD_CUSTOMER(state, customer) {
-    state.customers.push(customer)
+    state.customers.unshift(customer)
   },
   UPDATE_CUSTOMER(state, upCustomer) {
     const index = state.customers.findIndex(
