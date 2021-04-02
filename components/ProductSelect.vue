@@ -85,7 +85,7 @@
       </template>
       <template v-slot:no-results
         >Product not found.
-        <v-btn @click="addProduct = true">Add as new</v-btn></template
+        <v-btn @click="setupNewProd()">Add as new</v-btn></template
       >
     </v-data-table>
     <v-dialog v-model="addProduct" persistent max-width="1000px">
@@ -119,38 +119,51 @@
                   label="Keyword"
                 ></v-select>
               </v-col>
-              <v-col cols="12" sm="4" lg="3">
-                <v-text-field
-                  v-model="prod.brand"
-                  outlined
-                  label="Brand"
-                  autocomplete="new-password"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="4" lg="3">
-                <v-text-field
-                  v-model="prod.model"
-                  outlined
-                  label="Model"
-                  autocomplete="new-password"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="4" lg="3">
-                <v-text-field
-                  v-model="prod.sn"
-                  outlined
-                  label="SN"
-                  autocomplete="new-password"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="4" lg="3">
-                <v-text-field
-                  v-model="prod.vendor"
-                  outlined
-                  label="Vendor"
-                  autocomplete="new-password"
-                ></v-text-field>
-              </v-col>
+              <v-card v-if="details">
+                <v-card-text>
+                  <v-col cols="12" sm="4" lg="3">
+                    <v-text-field
+                      v-model="prod.brand"
+                      outlined
+                      label="Brand"
+                      autocomplete="new-password"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" lg="3">
+                    <v-text-field
+                      v-model="prod.model"
+                      outlined
+                      label="Model"
+                      autocomplete="new-password"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" lg="3">
+                    <v-text-field
+                      v-model="prod.sn"
+                      outlined
+                      label="SN"
+                      autocomplete="new-password"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" lg="3">
+                    <v-text-field
+                      v-model="prod.vendor"
+                      outlined
+                      label="Vendor"
+                      autocomplete="new-password"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" lg="3">
+                    <v-text-field
+                      v-model="prod.qty"
+                      type="number"
+                      outlined
+                      label="qty"
+                      autocomplete="new-password"
+                    ></v-text-field>
+                  </v-col>
+                </v-card-text>
+              </v-card>
               <v-col cols="12" sm="4" lg="3">
                 <v-text-field
                   v-model="prod.cost"
@@ -166,15 +179,6 @@
                   type="number"
                   outlined
                   label="price"
-                  autocomplete="new-password"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="4" lg="3">
-                <v-text-field
-                  v-model="prod.qty"
-                  type="number"
-                  outlined
-                  label="qty"
                   autocomplete="new-password"
                 ></v-text-field>
               </v-col>
@@ -203,6 +207,7 @@ export default {
   },
   data() {
     return {
+      details: false,
       productKeyword: null,
       showTemplates: false,
       productSearch: '',
@@ -280,20 +285,21 @@ export default {
         this.prod.name = 'Desktop - '
         this.prod.prodTemplate = true
         this.productKeyword = this.keywords.filter((k) => k.name === 'Tower')[0]
-      }
-      if (option === 'laptop') {
+      } else if (option === 'laptop') {
         this.prod.name = 'Laptop - '
         this.prod.prodTemplate = true
         this.productKeyword = this.keywords.filter(
           (k) => k.name === 'Laptop',
         )[0]
-      }
-      if (option === 'special') {
+      } else if (option === 'special') {
         this.prod.name = 'Special Ordered Part - '
         this.prod.prodTemplate = true
         this.productKeyword = null
-      }
+      } else this.prod.name = this.productSearch
       this.addProduct = true
+      setTimeout(() => {
+        this.$refs.name.focus()
+      }, 400)
     },
     postProduct() {
       this.addProduct = false
