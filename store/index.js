@@ -27,7 +27,7 @@ export const mutations = {
     state.products = products
   },
   ADD_PRODUCT(state, product) {
-    state.products.push(product)
+    state.products.unshift(product)
   },
   SET_PRODUCT(state, product) {
     state.product = product
