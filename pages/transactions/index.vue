@@ -1,22 +1,5 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col v-if="transactions.length"
-        ><b>Sales Tax Collected:</b
-        >{{ ` $${parseFloat(accumulateTaxes(selectRange)).toFixed(2)}` }}
-        <v-select
-          v-model="selectRange"
-          :items="dateRange"
-          :value="thisMonth"
-        ></v-select>
-      </v-col>
-      <v-col v-if="transactions.length"
-        ><b>Number of completed quick-sale:</b> calculate</v-col
-      >
-      <v-col v-if="transactions.length"
-        ><b>Number of completed work orders:</b> calculate</v-col
-      >
-    </v-row>
     <v-row> <h2>Layaways</h2></v-row>
     <v-card color="yellow" class="my-5">
       <v-card-text
@@ -169,6 +152,45 @@
         </v-data-table></v-col
       >
     </v-row>
+    <v-row> <h2>Reports</h2></v-row>
+    <v-card class="my-5">
+      <v-card-text>
+        <v-col
+          ><v-select
+            v-model="selectRange"
+            :items="dateRange"
+            :value="thisMonth"
+            label="Date Range"
+          ></v-select>
+        </v-col>
+        <v-col v-if="transactions.length"
+          ><b>Net Sales:</b
+          >{{ ` $${parseFloat(accumulateSales(selectRange)).toFixed(2)}` }}
+        </v-col>
+        <v-col v-if="transactions.length"
+          ><b>Sales Tax Collected:</b
+          >{{ ` $${parseFloat(accumulateTaxes(selectRange)).toFixed(2)}` }}
+        </v-col>
+        <v-col v-if="transactions.length"
+          ><b>Sales Tax Not Collected:</b
+          >{{ ` $${parseFloat(salesTaxesNotCollected).toFixed(2)}` }}
+        </v-col>
+        <v-col v-if="transactions.length"
+          ><b>Gross Sales:</b
+          >{{
+            ` $${parseFloat(
+              accumulateSales(selectRange) + accumulateTaxes(selectRange),
+            ).toFixed(2)}`
+          }}
+        </v-col>
+        <v-col v-if="transactions.length"
+          ><b>Number of completed quick-sale:</b> calculate</v-col
+        >
+        <v-col v-if="transactions.length"
+          ><b>Number of completed work orders:</b> calculate</v-col
+        >
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
@@ -237,6 +259,10 @@ export default {
     }
   },
   computed: {
+    salesTaxesNotCollected() {
+      const everySaleTaxed = this.accumulateSales(this.selectRange) * 0.0725
+      return everySaleTaxed - this.accumulateTaxes(this.selectRange)
+    },
     thisMonth() {
       const d = new Date()
       console.log(d.getMonth())
@@ -262,6 +288,19 @@ export default {
       const justTaxes = rangeOfTaxes.map((rot) => rot.taxes)
       if (justTaxes.length) {
         const accumulated = justTaxes.reduce((a, b) => {
+          return a + b
+        })
+        return accumulated
+      } else return 0
+    },
+    accumulateSales(range) {
+      const completed = this.transactions.filter((t) => t.completed)
+      const rangeOfSales = completed.filter(
+        (c) => this.dateRange[new Date(c.completed).getMonth()] === range,
+      )
+      const justSales = rangeOfSales.map((rot) => rot.subtotal)
+      if (justSales.length) {
+        const accumulated = justSales.reduce((a, b) => {
           return a + b
         })
         return accumulated
