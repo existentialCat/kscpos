@@ -2,7 +2,8 @@
   <v-container>
     <v-row>
       <v-col v-if="transactions.length"
-        ><b>Sales Tax Collected:</b>{{ ` $${accumulateTaxes(selectRange)}` }}
+        ><b>Sales Tax Collected:</b
+        >{{ ` $${parseFloat(accumulateTaxes(selectRange)).toFixed(2)}` }}
         <v-select
           v-model="selectRange"
           :items="dateRange"
