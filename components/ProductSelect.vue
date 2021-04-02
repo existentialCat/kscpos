@@ -105,11 +105,11 @@
                   autocomplete="new-password"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="4" lg="3">
-                <!-- <KeywordSelector
+              <!-- <v-col cols="12" sm="4" lg="3"> -->
+              <!-- <KeywordSelector
                 @updatekeywords="updateKeywords"
               ></KeywordSelector> -->
-                <v-select
+              <!-- <v-select
                   v-model="prod.keywords"
                   :items="keywords"
                   name="name"
@@ -118,7 +118,7 @@
                   outlined
                   label="Keyword"
                 ></v-select>
-              </v-col>
+              </v-col> -->
               <v-card v-if="details">
                 <v-card-text>
                   <v-col cols="12" sm="4" lg="3">
