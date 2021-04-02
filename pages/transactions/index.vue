@@ -183,12 +183,6 @@
             ).toFixed(2)}`
           }}
         </v-col>
-        <v-col v-if="transactions.length"
-          ><b>Number of completed quick-sale:</b> calculate</v-col
-        >
-        <v-col v-if="transactions.length"
-          ><b>Number of completed work orders:</b> calculate</v-col
-        >
       </v-card-text>
     </v-card>
   </v-container>
