@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <h2>Work Bench Orders</h2>
-      <v-spacer /><CreateOrder></CreateOrder
+      <v-spacer /><OrderCreate></OrderCreate
     ></v-row>
     <v-card color="blue" class="my-5">
       <v-card-text>
@@ -37,6 +37,7 @@
               >Open</v-btn
             >
           </template>
+          <template v-slot:no-data> All Caught Up! </template>
         </v-data-table>
       </v-card-text>
     </v-card>
@@ -152,9 +153,12 @@ export default {
     transactionString(transaction) {
       if (!transaction) {
         return 'No Transaction'
-      } else if (transaction.balanceDue >= 0) {
+      } else if (transaction.balanceDue > 0) {
         return 'Balance Due: $' + parseFloat(transaction.balanceDue).toFixed(2)
-      } else return 'Completed'
+      } else
+        return `$${parseFloat(transaction.subtotal + transaction.taxes).toFixed(
+          2,
+        )}`
     },
     ...mapActions(['fetchAllOrders']),
   },

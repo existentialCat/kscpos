@@ -108,7 +108,7 @@
           v-bind="attrs"
           v-on="on"
           @click="pickupDialog = true"
-          >Mark as Complete</v-btn
+          >Mark as Picked Up</v-btn
         >
       </template>
       <v-card>

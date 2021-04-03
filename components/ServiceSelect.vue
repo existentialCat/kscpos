@@ -41,11 +41,11 @@
             >Add as New</v-btn
           ></template
         >
-        <CreateService
+        <ServiceCreate
           :servicename="serviceSearch"
           @postServ="postService"
           @cancelAdd="addService = false"
-        ></CreateService> </v-dialog
+        ></ServiceCreate> </v-dialog
     ></template>
     <template v-slot:no-data
       >No inventory.
@@ -60,11 +60,11 @@
             >Add as New</v-btn
           ></template
         >
-        <CreateService
+        <ServiceCreate
           :servicename="serviceSearch"
           @postServ="postService"
           @cancelAdd="addService = false"
-        ></CreateService> </v-dialog
+        ></ServiceCreate> </v-dialog
     ></template>
   </v-data-table>
 </template>

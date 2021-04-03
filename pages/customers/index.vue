@@ -31,11 +31,11 @@
                   >Add as New</v-btn
                 ></template
               >
-              <CreateCustomer
+              <CustomerCreate
                 :customername="search"
                 @postCustomer="postCustomer"
                 @cancelAdd="addCustomer = false"
-              ></CreateCustomer> </v-dialog
+              ></CustomerCreate> </v-dialog
           ></template>
           <template v-slot:no-data
             >No Customers yet.
@@ -50,11 +50,11 @@
                   >Add as New</v-btn
                 ></template
               >
-              <CreateCustomer
+              <CustomerCreate
                 :customername="search"
                 @postCustomer="postCustomer"
                 @cancelAdd="addCustomer = false"
-              ></CreateCustomer> </v-dialog
+              ></CustomerCreate> </v-dialog
           ></template> </v-data-table
       ></v-col>
     </v-row>

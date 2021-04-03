@@ -10,15 +10,6 @@
         >Go To Order</v-btn
       >
     </v-row>
-    <CollectPayment
-      v-if="transaction.balanceDue > 0"
-      :products="transaction.products"
-      :services="transaction.products"
-      :customer="transaction.customer"
-      :balancedue="parseFloat(transaction.balanceDue)"
-      :loadtransaction="transaction"
-    >
-    </CollectPayment>
     <v-card id="printMe" class="printMe">
       <v-card-text style="font-family: 'Roboto'">
         <v-container>
@@ -161,6 +152,16 @@
         </v-container>
       </v-card-text>
     </v-card>
+    <CollectPayment
+      v-if="transaction.balanceDue > 0 && !transaction.order"
+      class="ma-5"
+      :products="transaction.products"
+      :services="transaction.products"
+      :customer="transaction.customer"
+      :balancedue="parseFloat(transaction.balanceDue)"
+      :loadtransaction="transaction"
+    >
+    </CollectPayment>
   </v-container>
 </template>
 

@@ -31,11 +31,11 @@
               >Add as New</v-btn
             ></template
           >
-          <CreateCustomer
+          <CustomerCreate
             :customername="customerSearch"
             @postCustomer="postCustomer"
             @cancelAdd="addCustomer = false"
-          ></CreateCustomer> </v-dialog
+          ></CustomerCreate> </v-dialog
       ></template>
       <template v-slot:no-data
         >No Customers yet.
@@ -50,17 +50,19 @@
               >Add as New</v-btn
             ></template
           >
-          <CreateCustomer
+          <CustomerCreate
             :customername="customerSearch"
             @postCustomer="postCustomer"
             @cancelAdd="addCustomer = false"
-          ></CreateCustomer> </v-dialog
+          ></CustomerCreate> </v-dialog
       ></template>
     </v-data-table>
     <v-container>
       <v-row>
         <v-spacer />
-        <v-btn text small>Wants to remain anonymous</v-btn>
+        <v-btn text small @click="chooseCustomer('anonymous')"
+          >Wants to remain anonymous</v-btn
+        >
       </v-row>
     </v-container>
   </div>
@@ -95,6 +97,14 @@ export default {
   },
   methods: {
     chooseCustomer(customer) {
+      if (customer === 'anonymous') {
+        const anonymous = {
+          fullName: 'Anonymous',
+          phone: '',
+        }
+        this.$emit('chooseCustomer', anonymous)
+        return
+      }
       this.chosenCustomer = customer
       this.$emit('chooseCustomer', this.chosenCustomer)
     },
