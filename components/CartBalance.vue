@@ -124,17 +124,14 @@ export default {
       if (this.chosenItems) {
         const subtotal = this.chosenItems.map((p) => {
           const multiplied = p.price * p.incart
-          const format = multiplied.toFixed(2)
-          if (p.incart > 0) return (format * 100) / 100
+          if (p.incart > 0) return multiplied
           else {
-            const format = p.price.toFixed(2)
-            return (format * 100) / 100
+            return p.price
           }
         })
         if (subtotal.length > 0) {
           const sum = subtotal.reduce((a, b) => a + b)
-          const format = sum.toFixed(2)
-          return (format * 100) / 100
+          return parseFloat(sum).toFixed(2)
         } else return 0
       } else return null
     },
@@ -144,27 +141,28 @@ export default {
           if (p.taxable) {
             if (p.incart > 0) {
               const subtotal = p.price * p.incart
-              const calculateTax = subtotal * (this.taxrate - 1)
-              const format = calculateTax.toFixed(2)
-              return (format * 100) / 100
+              const calculateTax = subtotal * 0.0725
+              console.log(`calculateTax: ${calculateTax}`)
+              return parseFloat(calculateTax).toFixed(2)
             }
           } else return 0
         })
         if (taxes && taxes.length > 0) {
           const sum = taxes.reduce((a, b) => a + b)
-          const format = sum.toFixed(2)
-          return format
+          return parseFloat(sum).toFixed(2)
         } else return 0
       } else return 0
     },
     balanceDue() {
-      const formatSubTotal = (this.subtotalDue * 100) / 100
-      const formatTaxes = (this.taxesDue * 100) / 100
-      const subtotalAndTax = formatSubTotal + formatTaxes
-      const formatSum = subtotalAndTax.toFixed(2)
+      console.log(`subtotalDue: ${this.subtotalDue}`)
+      console.log(`taxesDue ${this.taxesDue}`)
+      const subtotalAndTax =
+        parseFloat(this.subtotalDue) + parseFloat(this.taxesDue)
+      const formatSum = parseFloat(subtotalAndTax).toFixed(2)
+      console.log(`subtotalAndTax subtotal plus taxes: ${subtotalAndTax}`)
       if (this.loadtransaction && this.loadtransaction.paid) {
         const paidDifference = subtotalAndTax - this.loadtransaction.paid
-        const formatSum = paidDifference.toFixed(2)
+        const formatSum = parseFloat(paidDifference).toFixed(2)
         return formatSum
       } else return formatSum
     },

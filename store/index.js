@@ -144,6 +144,10 @@ export const mutations = {
   UPDATE_ORDER_STATUS(state, status) {
     state.order.status = status
   },
+  UPDATE_ORDER_SYMPTOMS(state, symptoms) {
+    console.log(symptoms)
+    state.order.symptoms = symptoms
+  },
   ADD_NOTE_TO_ORDER(state, note) {
     state.order.notes.push(note)
   },
@@ -229,6 +233,14 @@ export const actions = {
         commit('ADD_TRANSACTION_TO_ORDER', res.data.transaction)
         commit('SET_TRANSACTION', res.data.transaction)
         commit('SET_ORDER', res.data)
+      })
+  },
+  async updateOrderSymptoms({ commit }, symptoms) {
+    return await this.$axios
+      .put(`/orders/${symptoms.order}/editsymptom`, symptoms)
+      .then((res) => {
+        console.log(res.data.symptoms)
+        commit('UPDATE_ORDER_SYMPTOMS', res.data.symptoms)
       })
   },
   setFinalNote({ commit }, note) {
@@ -434,6 +446,15 @@ export const actions = {
       })
       .catch((error) => {
         console.log('failed on createCustomer action' + error)
+      })
+  },
+  async updateCustomer({ commit }, customer) {
+    return await this.$axios
+      .put(`/customers/${customer.id}/updatecustomer`, customer)
+      .then((res) => {
+        commit('UPDATE_CUSTOMER', res.data)
+        commit('SET_CUSTOMER', res.data)
+        return res.data
       })
   },
   clearTransaction({ commit }) {

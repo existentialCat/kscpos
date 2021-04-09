@@ -25,7 +25,7 @@
           ></v-col
         >
         <v-col cols="12" :lg="order.transaction ? 8 : 12">
-          <v-card
+          <v-card outlined
             ><v-card-title
               >{{ order.customer.fullName }} - {{ order.customer.phone }}
               <v-spacer v-if="!fullView" /><v-btn
@@ -51,7 +51,32 @@
                 <v-col cols="12"><h3>Check in Symptoms</h3></v-col
                 ><v-col>
                   <v-card
-                    ><v-card-title>{{ order.symptoms }}</v-card-title></v-card
+                    ><v-card-title v-if="!editSymptom" @click="changeSymptom">{{
+                      order.symptoms
+                    }}</v-card-title
+                    ><v-card-text v-if="editSymptom"
+                      ><v-textarea
+                        ref="symptom"
+                        v-model="newSymptom"
+                        outlined
+                        rows="3"
+                      ></v-textarea
+                      ><v-btn
+                        v-if="editSymptom"
+                        x-small
+                        @click="editSymptom = false"
+                        >cancel</v-btn
+                      ><v-btn
+                        color="primary"
+                        class="ml-3"
+                        small
+                        :disabled="
+                          newSymptom == order.symptoms || newSymptom < 3
+                        "
+                        @click="updateSymptom"
+                        >save</v-btn
+                      ></v-card-text
+                    ></v-card
                   ></v-col
                 >
               </v-row>
@@ -314,6 +339,8 @@ export default {
   // middleware: 'auth',
   data() {
     return {
+      editSymptom: false,
+      newSymptom: '',
       finalNoteDialog: false,
       repairSummary: '',
       noteDialog: false,
@@ -365,6 +392,22 @@ export default {
     this.fetchOrder(this.$route.params.id)
   },
   methods: {
+    changeSymptom() {
+      this.newSymptom = this.order.symptoms
+      this.editSymptom = true
+      setTimeout(() => {
+        this.$refs.symptom.focus()
+      }, 500)
+    },
+    updateSymptom() {
+      const symptoms = {
+        order: this.$route.params.id,
+        text: this.newSymptom,
+      }
+      console.log(symptoms.text)
+      this.updateOrderSymptoms(symptoms)
+      this.editSymptom = false
+    },
     postFinalNote() {
       const note = {
         text: this.repairSummary,
@@ -484,6 +527,7 @@ export default {
       'clearChosenServices',
       'createOrderTransaction',
       'setFinalNote',
+      'updateOrderSymptoms',
     ]),
   },
 }
