@@ -143,7 +143,7 @@ export default {
               const subtotal = p.price * p.incart
               const calculateTax = subtotal * 0.0725
               console.log(`calculateTax: ${calculateTax}`)
-              return parseFloat(calculateTax).toFixed(2)
+              return parseFloat(calculateTax)
             }
           } else return 0
         })
