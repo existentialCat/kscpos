@@ -147,8 +147,10 @@ export default {
             }
           } else return 0
         })
+        console.log(`mapped taxes: ${taxes}`)
         if (taxes && taxes.length > 0) {
-          const sum = taxes.reduce((a, b) => a + b)
+          const sum = taxes.reduce((a, b) => parseFloat(a) + parseFloat(b))
+          console.log(sum)
           return parseFloat(sum).toFixed(2)
         } else return 0
       } else return 0
