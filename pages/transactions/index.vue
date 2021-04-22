@@ -166,6 +166,10 @@
           >{{ ` $${parseFloat(accumulateSales(selectRange)).toFixed(2)}` }}
         </v-col>
         <v-col v-if="transactions.length"
+          ><b>Net Taxable Sales:</b
+          >{{ ` $${parseFloat(netTaxable).toFixed(2)}` }}
+        </v-col>
+        <v-col v-if="transactions.length"
           ><b>Sales Tax Collected:</b
           >{{ ` $${parseFloat(accumulateTaxes(selectRange)).toFixed(2)}` }}
         </v-col>
@@ -240,6 +244,10 @@ export default {
   computed: {
     dateRange() {
       return this.months.concat('2021')
+    },
+    netTaxable() {
+      const calculateUntaxed = this.salesTaxesNotCollected / 0.0725
+      return this.accumulateSales(this.selectRange) - calculateUntaxed
     },
     salesTaxesNotCollected() {
       const everySaleTaxed = this.accumulateSales(this.selectRange) * 0.0725
