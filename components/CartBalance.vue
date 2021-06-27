@@ -136,7 +136,11 @@ export default {
       } else return null
     },
     taxesDue() {
-      if (this.chosenItems && this.chosenItems.length) {
+      if (
+        this.chosenItems &&
+        this.chosenItems.length &&
+        !this.customer.taxExempt
+      ) {
         const taxes = this.chosenItems.map((p) => {
           if (p.taxable) {
             if (p.incart > 0) {

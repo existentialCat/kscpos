@@ -25,6 +25,13 @@
                 autocomplete="new-password"
               ></v-text-field>
             </v-col>
+            <v-col cols="12" sm="4" lg="3">
+              <v-checkbox
+                v-model="customer.taxExempt"
+                outlined
+                label="Tax Exempt?"
+              ></v-checkbox>
+            </v-col>
           </v-row>
         </v-container>
       </v-card-text>
@@ -51,6 +58,7 @@ export default {
       customer: {
         fullName: '',
         phone: '',
+        taxExempt: false,
       },
     }
   },

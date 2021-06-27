@@ -112,6 +112,7 @@ export default {
       const customer = {
         fullName: cust.fullName,
         phone: cust.phone,
+        taxExempt: cust.taxExempt,
       }
       this.addCustomer = false
       this.createCustomer(customer).then((res) => {

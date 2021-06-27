@@ -450,7 +450,7 @@ export const actions = {
   },
   async updateCustomer({ commit }, customer) {
     return await this.$axios
-      .put(`/customers/${customer.id}/updatecustomer`, customer)
+      .put(`/customers/${customer._id}/updatecustomer`, customer)
       .then((res) => {
         commit('UPDATE_CUSTOMER', res.data)
         commit('SET_CUSTOMER', res.data)
