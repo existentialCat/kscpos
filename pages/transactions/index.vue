@@ -182,7 +182,16 @@
           }}
         </v-col>
       </v-card-text>
+      <v-card-actions
+        ><v-btn color="primary" @click="print()">Print</v-btn></v-card-actions
+      >
     </v-card>
+    <TaxesPrint
+      v-if="printMode"
+      :selectrange="selectRange"
+      :nettaxsales="parseFloat(netTaxable).toFixed(2)"
+      :salestaxcollected="parseFloat(accumulateTaxes(selectRange)).toFixed(2)"
+    ></TaxesPrint>
   </v-container>
 </template>
 
@@ -191,6 +200,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
+      printMode: false,
       selectRange: '',
       months: [
         'January',
@@ -273,6 +283,13 @@ export default {
     this.fetchAllTransactions()
   },
   methods: {
+    print() {
+      this.printMode = true
+      setTimeout(() => {
+        this.$htmlToPaper('printMe')
+        this.printMode = false
+      }, 1000)
+    },
     accumulateTaxes(range) {
       const completed = this.transactions.filter((t) => t.completed)
       if (this.months.includes(range)) {
