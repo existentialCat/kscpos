@@ -91,7 +91,7 @@
                           icon
                           v-bind="attrs"
                           :on="on"
-                          :disabled="order.completed"
+                          :disabled="order.completed !== null"
                           @click="noteDialog = true"
                           ><v-icon>mdi-plus</v-icon></v-btn
                         >
@@ -137,7 +137,7 @@
                           icon
                           v-bind="attrs"
                           :on="on"
-                          :disabled="order.completed"
+                          :disabled="order.completed !== null"
                           @click="repairDialog = true"
                           ><v-icon>mdi-plus</v-icon></v-btn
                         >
@@ -172,7 +172,10 @@
                           </TransactionBuilder>
                         </v-col>
                         <v-col cols="12" lg="4">
-                          <CartBalance noaction></CartBalance>
+                          <CartBalance
+                            :customer="order.customer"
+                            noaction
+                          ></CartBalance>
                         </v-col>
                       </v-row>
                     </v-card-text>
@@ -204,7 +207,7 @@
                           icon
                           v-bind="attrs"
                           :on="on"
-                          :disabled="order.completed"
+                          :disabled="order.completed !== null"
                           @click="contactDialog = true"
                           ><v-icon>mdi-plus</v-icon></v-btn
                         >
